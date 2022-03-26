@@ -20,8 +20,8 @@ We will check that all airlines have a valid Source Airport and a destination Ai
 We will store each route structured as an Edge object:
 ```cpp
 struct Edge {
-	double distance;
-	Unsigned num_planes;
+	unsigned long long distance;
+	unsigned num_planes;
 };
 ```
 we will also construct a two-dimensional vector structured as below
