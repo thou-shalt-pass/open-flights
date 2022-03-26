@@ -24,4 +24,4 @@ Each member is expected to work for 2-5 hours per week to complete his assigned 
 Conflict Resolution: If any conflict occurs, including time conflict and conflict on design and implementation of our project. We will vote and follow the choice agreed by any two of the members. 
 
 # Signature
-Leo Luo
+Leo Luo, Yanzhen Shen
