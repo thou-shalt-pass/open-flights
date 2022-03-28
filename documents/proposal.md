@@ -90,7 +90,7 @@ List contains strongly connected components
 Let n be the number of airports.
 
 - Time: O(n^2)
-- Memory: O(1)
+- Memory: O(n^2)
  
 # Timeline
 
