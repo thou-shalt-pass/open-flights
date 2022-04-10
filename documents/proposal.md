@@ -46,7 +46,7 @@ For the adjacency list, we will use
 ```cpp
 std::vector<std::list<int> > adj_list( | V | );
 ```
-adj_list is defined as std::vector<std::list<int> >, instead of std::vector<std::vector<Edge> >, since we can access corresponding values in adj_matrix in O(1) .
+adj_list is defined as `std::vector<std::list<int> >`, instead of `std::vector<std::vector<Edge> >`, since we can access corresponding values in adj_matrix in O(1) .
 
 Since it is a simple graph, we have V + E = O( V^2 ).  
 Thus, the total space complexity is O( V^2 + ( V + E ) ) = O( V^2 ) .
