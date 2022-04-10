@@ -1,6 +1,6 @@
 # Leading Question
 
-Utilizing the OpenFlights dataset gathered from https://openflights.org/data.html, we want to find the shortest air-path between two given airports, the most important airport, and the strongly connected component within the airport network based on whether customer needs to re-check-in between flights.
+Utilizing the OpenFlights dataset gathered from https://openflights.org/data.html, we want to find the shortest air-path between two given airports and the most important airport.
 
 # Dataset Acquisition and Processing
 
@@ -17,33 +17,51 @@ We will check that all airlines have a valid Source Airport and a destination Ai
 
 ## Data storage
 
-We will store each route structured as an Edge object:
+We will store each route as an Edge object, in which the distance is calculated using Haversine formula given the longitude and latitude of the two airports:
 ```cpp
 struct Edge {
-	unsigned long long distance;
-	unsigned num_planes;
+	unsigned distance;
 };
 ```
-we will also construct a two-dimensional vector structured as below
+
+We will store each airport as a Node object, in which ID is the unique 3-letter IATA code for the airport:
 ```cpp
-std::vector<std::vector<Edge> > adj_matrix_graph(n, std::vector<Edge>(n));
+struct Node{
+	std::string city;
+	std::string airport_name;
+	std::string iata_code;
+	double longitude;
+double latitude;
+};
 ```
-The total storage cost is O(n^2) in which n is the number of airports.
 
-## Data modification
+Let V be the set of nodes (airports), and let E be the set of edges (routes).
+We will store the directed graph G = (V, E) both as an adjacency matrix and as an adjacency list. 
 
-We will use a random number generator to assign each airport a bool value to represent whether a customer needs to re-check-in between flights (1 for needs to re-check-in, 0 or no need to re-check-in).
+For the adjacency matrix, we will use
+```cpp
+std::vector<std::vector<Edge> > adj_matrix( | V | , std::vector<Edge>( | V | ));
+```
+For the adjacency list, we will use
+```cpp
+std::vector<std::list<int> > adj_list( | V | );
+```
+adj_list is defined as std::vector<std::list<int> >, instead of std::vector<std::vector<Edge> >, since we can access corresponding values in adj_matrix in O(1) .
+
+Since it is a simple graph, we have V + E = O( V^2 ).  
+Thus, the total space complexity is O( V^2 + ( V + E ) ) = O( V^2 ) .
+
 
 # Algorithm
 
-In order to implement the project successfully, we will take advantage of Floyd-Warshall, PageRank, and strongly connected components (including invoking of DFS) algorithm.
+We will implement Floyd-Warshall, PageRank, and DFS.
 Note that time complexity does not include preprocessing time; memory complexity does not include input and output memory usage.
 
 ## Floyd-Warshall
 
 ### Input
 
-Adjacency matrix where entries are distance between two airports if there exists a route. More formally, the input is a matrix A such that A[i][j] is the distance between node i and j if these two nodes are connected; if (i, j) \notin E, then A[i][j] = \infty. 
+An adjacency matrix where entries are the distance between two airports if there exists a route. More formally, the input is a matrix A such that A[i][j] is the distance between node i and j if these two nodes are connected; if (i, j) \notin E, then A[i][j] = \infty. 
 
 ### Output
 
@@ -51,52 +69,49 @@ A matrix where entries are shortest distances between two airports. More formall
 
 ### Efficiency
 
-Let n be the number of airports.
+- Time: O(V^3)
 
-- Time: O(n^3)
+- Memory: O(V^2)
 
-- Memory: O(n^2)
-
-## PageRank
+## PageRank (with fixed number of iterations)
 
 ### Input
 
-Adjacency matrix where entries are number of planes. More formally, the input is a matrix E such that E[i][j] is the number of flights from node i to j. 
+An adjacency list representing an unweighted directed graph.
 
 ### Output
 
-Table includes the importance of each airport. More formally, the output is a vector F where F[i] is the number that represents the importance of node i.
+A vector in which each value represents the importance of each airport. More formally, the output is a vector F where F[i] is the number that represents the importance of node i.
 
 ### Efficiency
 
-Let n be the number of airports.
+Let k be the number of iterations.
 
-- Time: O(n^3)
-- Memory: O(n^2)
+- Time: O( k ( V + E ) )
+- Memory: O( V )
 
-## Strongly connected components
+## DFS
+
+Abstract DFS library
 
 ### Input
 
-- Unweighted adjacency matrix H such that H[i][j] is a bool value representing whether there exists an route from node i to j.
-- Array of bool values representing whether the airports require re-check-in. 
+unweighted / weighted undirected / directed graph in adjacency list
+function object
 
 ### Output
 
-List contains strongly connected components
+Return value: void
 
 ### Efficiency
 
-Let n be the number of airports.
+- Time: O(V + E)
+- Memory: O(d) where d is the maximum number of nodes on a simple path
 
-- Time: O(n^2)
-- Memory: O(n^2)
- 
 # Timeline
 
 - Finish reading and processing the data before April 2nd. 
-- Complete basic structure by April 9th.
-- Complete Floyd-Warshall by April 15th. 
-- Complete PageRank by April 23rd.
+- Complete PageRank by April 15th.
+- Complete Floyd-Warshall by April 23th. 
 - Complete DFS by April 29th. 
 - Complete test cases by May 4th.
