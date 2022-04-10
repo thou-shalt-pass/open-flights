@@ -4,7 +4,7 @@ Utilizing the OpenFlights dataset gathered from https://openflights.org/data.htm
 
 # Dataset Acquisition and Processing
 
-We are using the OpenFlights dataset(https://openflights.org/data.html). 
+We are using the OpenFlights dataset (https://openflights.org/data.html). 
 
 ## Data format
 
@@ -31,7 +31,7 @@ struct Node{
 	std::string airport_name;
 	std::string iata_code;
 	double longitude;
-double latitude;
+	double latitude;
 };
 ```
 
