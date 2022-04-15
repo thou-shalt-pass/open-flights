@@ -2,18 +2,28 @@
 #define _TYPE_H
 
 #include <limits>
+#include <list>
+#include <string>
 #include <vector>
 
 template <typename T>
 using Matrix = std::vector<std::vector<T> >;
 
-constexpr unsigned long long kNoAirline = std::numeric_limits<unsigned long long>::max();
+constexpr unsigned long long kNoAirline = std::numeric_limits<unsigned>::max();
 
-using AdjMatrix = Matrix<unsigned long long>;
-
-struct Path {
-	std::vector<size_t> airports;
-	unsigned long long distance;
+struct Edge {
+	unsigned distance;
 };
+
+struct Node{
+	std::string city;
+	std::string airport_name;
+	std::string iata_code;
+	double longitude;
+	double latitude;
+};
+
+using AdjList = std::vector<std::list<size_t> >;
+using AdjMatrix = Matrix<Edge>;
 
 #endif
