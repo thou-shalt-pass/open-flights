@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "make tests_importance",
+			"command": "make",
+			"args": [
+				"tests_importance",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+	]
+}
