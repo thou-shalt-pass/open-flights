@@ -1,7 +1,5 @@
 #include "importance.h"
 
-constexpr unsigned kPageRankIterationNum = 10;// must be an even number to be accurate
-
 void PageRank(const AdjList& graph, std::vector<double>& curr_importance, 
     std::vector<double>& next_importance) {
     next_importance.clear();
@@ -14,13 +12,17 @@ void PageRank(const AdjList& graph, std::vector<double>& curr_importance,
     }
 }
 
-std::vector<double> Importance(const AdjList& graph) {
-    constexpr unsigned kPageRankIterationNumHalf = (kPageRankIterationNum >> 1);
+std::vector<double> Importance(const AdjList& graph, unsigned iteration_times) {
     double init_importance = static_cast<double>(1) / graph.size();
     std::vector<double> importance_1(graph.size(), init_importance), importance_2;
-    for (unsigned i = 0; i < kPageRankIterationNumHalf; ++i) {
+    unsigned iteration_times_half = iteration_times >> 1;
+    for (unsigned i = 0; i < iteration_times_half; ++i) {
         PageRank(graph, importance_1, importance_2);
         PageRank(graph, importance_2, importance_1);
+    }
+    if (iteration_times & 1) {
+        PageRank(graph, importance_1, importance_2);
+        return importance_2;
     }
     return importance_1;
 }
