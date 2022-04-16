@@ -2,9 +2,6 @@
 #include <iostream>
 
 int main() {
-    Data data;
-    data.read_airport();
-    std::vector<Node> airports = data.get_airports();
-    data.display(airports[1]);
+    Data data("data/airport.csv", "data/route.csv");
     return 0;
 }

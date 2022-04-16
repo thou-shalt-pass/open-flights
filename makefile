@@ -17,8 +17,8 @@ bin/tests_matrix_operation: obj/catch.o ./tests/tests_utilities.cpp ./tests/test
 obj/catch.o: tests/catch.cc
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-# .DEFAULT_GOAL := exec
-.PHONY: clean tests_importance tests_matrix_operation
+.DEFAULT_GOAL := main
+.PHONY: clean main tests_importance tests_matrix_operation
 
 clean:
 	rm -rf ./bin/* ./obj/*

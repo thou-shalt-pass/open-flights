@@ -3,6 +3,17 @@
 	"tasks": [
 		{
 			"type": "shell",
+			"label": "make main",
+			"command": "make",
+			"args": [
+				"main",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+		{
+			"type": "shell",
 			"label": "make tests_importance",
 			"command": "make",
 			"args": [
