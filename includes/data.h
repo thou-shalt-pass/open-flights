@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+
 struct Edge{
     unsigned distance_;
 };
@@ -16,12 +17,14 @@ struct Node{
 	double longitude_;
 	double latitude_;
 };
-class Info {
+class Data {
 public:
-void read_airport();
-void read_airline();
-std::vector<Node> airports;
-std::vector<Edge> airlines;
+	void read_airport();
+	void read_airline();
+	std::vector<Node> get_airports();
+	void display(Node airprot);
+	std::vector<Node> airports;
+	std::vector<Edge> airlines;
 };
 
 #endif

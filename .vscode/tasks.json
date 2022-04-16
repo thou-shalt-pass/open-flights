@@ -12,5 +12,16 @@
 				"cwd": "${workspaceFolder}"
 			},
 		},
+		{
+			"type": "shell",
+			"label": "make tests_matrix_operation",
+			"command": "make",
+			"args": [
+				"tests_matrix_operation",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
 	]
 }
