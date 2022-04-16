@@ -34,5 +34,16 @@
 				"cwd": "${workspaceFolder}"
 			},
 		},
+		{
+			"type": "shell",
+			"label": "make tests_strongly_connected_components",
+			"command": "make",
+			"args": [
+				"tests_strongly_connected_components",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
 	]
 }
