@@ -46,7 +46,7 @@ Finish implementing Pagerank algorithm, check if the result converges as iterati
 
 ### Tasks Accomplished
 
-- Yirong Chen: set up bijection between IATA code and index of each airport in adjacency matrix; implmeneted PageRank using fixed number of iterations; implemented DFS
+- Yirong Chen: set up bijection between IATA code and index of each airport in adjacency matrix; implmeneted PageRank using fixed number of iterations; implemented DFS and strongly connected components
 - Leo Luo: stored airports and airlines data into desired structures; implemented Haversine formula to calculate the distance between two airports given latitude and longitude
 - Yanzhen Shen: implemented algorithm to find a nullspace within the adjacency matrix
 
