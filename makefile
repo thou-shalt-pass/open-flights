@@ -7,7 +7,7 @@ tests_importance: bin/tests_importance
 tests_matrix_operation: bin/tests_matrix_operation
 tests_strongly_connected_components: bin/tests_strongly_connected_components
 
-bin/main: ./src/data.cpp ./src/main.cpp 
+bin/main: ./src/data.cpp ./src/main.cpp ./src/strongly_connected_components.cpp ./src/importance.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 bin/tests_importance: obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_importance.cpp ./src/importance.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
