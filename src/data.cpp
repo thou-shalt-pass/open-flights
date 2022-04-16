@@ -3,7 +3,7 @@
 #include <istream>
 #include <stdexcept>
 #include <string>
-
+#include <cmath>
 #include <unordered_set>
 
 #include "data.h"
@@ -61,7 +61,29 @@ void Data::ReadAirport(const std::string& airport_filename) {
             idx_to_node_.size() - 1);
     }
 }
+// convert degrees to radian
+long double Data::ToRadiant(const long double degree) {
+    long double ratio = (M_PI) / 180;
+    return (ratio * degree);
+}
 
+// Haversine formula to calculate distance between 2 points on a sphere given longtitudes and latitudes
+unsigned Data::Distance (long double lat1, long double long1, long double lat2, long double long2) {
+    lat1 = ToRadiant(lat1);
+    lat2 = ToRadiant(lat2);
+    long1 = ToRadiant(long1);
+    long2 = ToRadiant(long2);
+    long double dlong = long2 - long1;
+    long double dlat = lat2 - lat1;
+    long double result = pow(sin(dlat/2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlong/2), 2);
+    result = 2 * asin(sqrt(result));
+
+    // earth radius = 6371 km
+    result *= 6371;
+    return unsigned (result);
+
+}
+ 
 void Data::ReadAirline(const std::string& airline_filename) {
     size_t airport_size = idx_to_node_.size();
     adj_list_.resize(airport_size);
@@ -77,7 +99,9 @@ void Data::ReadAirline(const std::string& airline_filename) {
         size_t src_idx = code_to_idx_.at(src_code);
         size_t dst_idx = code_to_idx_.at(dst_code);
         adj_list_[src_idx].push_back(dst_idx);
-        adj_matrix_[src_idx][dst_idx].distance = 10;// TODO: calc dist
+        adj_matrix_[src_idx][dst_idx].distance = Distance(idx_to_node_[src_idx].latitude, 
+            idx_to_node_[src_idx].longitude, idx_to_node_[dst_idx].latitude, 
+            idx_to_node_[dst_idx].longitude);
     }
 }
 
