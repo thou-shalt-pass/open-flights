@@ -1,5 +1,3 @@
-#include <queue>
-
 #include "dfs.h"
 #include "strongly_connected_components.h"
 
@@ -16,23 +14,25 @@ AdjList Transpose(const AdjList& graph) {
 std::list<std::list<size_t> > StronglyConnectedComponents(const AdjList& graph) {
     size_t n = graph.size();
 
+    // topological sort
     size_t look_next_origin_1_counter = 0;
     auto look_next_origin_1 = [&look_next_origin_1_counter]() {
         return look_next_origin_1_counter++;
     };
-    int time_counter = 0;
-    std::priority_queue<std::pair<int, size_t> > pq;// [finish time, node_idx]
-    auto op_after_visit_1 = [&time_counter, &pq](size_t curr_node_idx, int) {
-        pq.emplace(++time_counter, curr_node_idx);
+    std::vector<size_t> topo_sort;
+    topo_sort.reserve(n + 1);
+    topo_sort.push_back(n);// for the purpose of stopping DFS
+    auto op_after_visit_1 = [&topo_sort](size_t curr_node_idx, int) {
+        topo_sort.push_back(curr_node_idx);
     };
     DFS(graph, look_next_origin_1, [](size_t) { return 0; }, [](size_t, int) {}, op_after_visit_1);
 
     AdjList transpose_graph = Transpose(graph);
 
-    auto look_next_origin_2 = [n, &pq]() {
-        if (pq.empty()) { return n; }
-        size_t v = pq.top().second;
-        pq.pop();
+    // find strongly connected components
+    auto look_next_origin_2 = [&topo_sort]() {
+        size_t v = topo_sort.back();
+        topo_sort.pop_back();
         return v;
     };
     std::list<std::list<size_t> > scc;
