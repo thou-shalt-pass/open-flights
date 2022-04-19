@@ -1,7 +1,7 @@
 #ifndef _DFS_H
 #define _DFS_H
 
-#include <stack>
+#include <functional>
 
 #include "type.h"
 
@@ -25,24 +25,22 @@ void DFS(const AdjList& graph, LookNextOrigin look_next_origin,
         OpBeforeComponent op_before_component, OpBeforeVisit op_start_visit, OpAfterVisit op_after_visit) {
     size_t n = graph.size(), origin;
     std::vector<bool> visited(graph.size(), false);
+    std::function<void(size_t, int)> dfs_visit;
+    dfs_visit = [&](size_t u, int component_handle) {
+        op_start_visit(u, component_handle);
+        for (size_t v : graph[u]) {
+            if (!visited[v]) {
+                visited[v] = true;
+                dfs_visit(v, component_handle);
+            }
+        }
+        op_after_visit(u, component_handle);
+    };
     while ((origin = look_next_origin()) < n) {
         if (visited[origin]) { continue; }
         visited[origin] = true;
         int component_handle = op_before_component(origin);
-        std::stack<size_t> s;
-        s.push(origin);
-        while (!s.empty()) {
-            size_t u = s.top();
-            s.pop();
-            op_start_visit(u, component_handle);
-            for (size_t v : graph[u]) {
-                if (!visited[v]) {
-                    visited[v] = true;
-                    s.push(v);
-                }
-            }
-            op_after_visit(u, component_handle);
-        }
+        dfs_visit(origin, component_handle);
     }
 }
 
