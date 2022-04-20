@@ -9,7 +9,7 @@ tests_strongly_connected_components: bin/tests_strongly_connected_components
 
 bin/main: ./src/data.cpp ./src/main.cpp ./src/strongly_connected_components.cpp ./src/importance.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
-bin/tests_importance: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_importance.cpp ./src/importance.cpp
+bin/tests_importance: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_importance.cpp ./src/importance.cpp ./src/matrix_operation.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_matrix_operation: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_matrix_operation.cpp ./src/matrix_operation.cpp
