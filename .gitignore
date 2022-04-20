@@ -1,3 +1,4 @@
 bin/**
 obj/**
+reserve_obj/**
 .vscode/**
