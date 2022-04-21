@@ -55,35 +55,6 @@ TEST_CASE("ImportanceEigenvector(const AdjMatrix& graph)", "[importance_eigenvec
             { 0, 2 }
         };
         std::vector<double> importance = ImportanceEigenvector(graph);
-        CheckVectorDouble(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.01);
-    }
-    SECTION("nodes with no out-going edges 1") {
-        AdjList graph {
-            { 2 },
-            { 2 },
-            { }
-        };
-        std::vector<double> importance = ImportanceEigenvector(graph);
-        CheckVectorDouble(importance, { 0, 0, 0 }, 0.01);
-    }
-    SECTION("nodes with no out-going edges 2") {
-        AdjList graph {
-            { 1 },
-            { 0 },
-            { }
-        };
-        std::vector<double> importance = ImportanceEigenvector(graph);
-        CheckVectorDouble(importance, { 0.33, 0.33, 0 }, 0.01);
-    }
-    SECTION("disconnected") {
-        AdjList graph {
-            { 1 },
-            { 0 },
-            { 3, 4 },
-            { 2, 4 },
-            { 2, 3 }
-        };
-        std::vector<double> importance_a = ImportanceEigenvector(graph);
-        CheckVectorDouble(importance_a, { 0.2, 0.2, 0.2, 0.2, 0.2 }, 0.01);
+        CheckVectorDoubleWithScalarMultiple(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.05);
     }
 }

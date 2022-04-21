@@ -12,6 +12,8 @@ void CheckDouble(double a, double b, double error);
 
 void CheckVectorDouble(const std::vector<double>& a, const std::vector<double>& b, double error);
 
+void CheckVectorDoubleWithScalarMultiple(const std::vector<double>& a, const std::vector<double>& b, double error);
+
 template <typename InputIterator>
 void CheckComb(InputIterator a_begin, InputIterator a_end, 
         InputIterator b_begin, InputIterator b_end) {

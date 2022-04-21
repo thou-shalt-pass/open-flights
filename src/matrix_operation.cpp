@@ -34,17 +34,10 @@ void Print2Dvector(Matrix<Fraction>& matrix){
     }
 }
 
-std::vector<Fraction> FindOneDimNullSpace(const Matrix<double>& matrix) {
+std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix) {
     std::vector<Fraction> solution;
 
-    Matrix<Fraction> matrix_cpy;
-    for(size_t row = 0; row < matrix.size(); row++){
-        std::vector<Fraction> row_entries;
-        for(size_t col = 0; col < matrix[0].size(); col++){
-            row_entries.push_back(matrix[row][col]);
-        }
-        matrix_cpy.push_back(row_entries);
-    }
+    Matrix<Fraction> matrix_cpy(matrix);
 
     size_t row = 0;
     size_t row_free;

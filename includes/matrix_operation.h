@@ -124,7 +124,7 @@ Fraction operator/ (const Fraction& f1, const Fraction& f2);
  */
 bool operator== (const Fraction& f1, const Fraction& f2);
 
-std::vector<Fraction> FindOneDimNullSpace(const Matrix<double>& matrix);
+std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix);
 
 void rowSwap(std::vector<Fraction>& row1, std::vector<Fraction>& row2);
 
