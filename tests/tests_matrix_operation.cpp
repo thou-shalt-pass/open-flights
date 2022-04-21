@@ -10,8 +10,8 @@ void PrintVector(const std::vector<double>& solution){
     }
 }
 
-void HelpTestMatrixOperator(std::vector<double>& Solution, std::vector<double>& Expected){
-    double scalar = Solution[0] / Expected[0];
+void HelpTestMatrixOperator(std::vector<Fraction>& Solution, std::vector<Fraction>& Expected){
+    Fraction scalar = Solution[0] / Expected[0];
     for(size_t i = 1; i < Expected.size(); i++){
         REQUIRE(Solution[i] / Expected[i] == scalar);
     }
@@ -20,8 +20,8 @@ void HelpTestMatrixOperator(std::vector<double>& Solution, std::vector<double>& 
 TEST_CASE("FindOneDimNullSpace(const Matrix<double>& matrix)", "[find_1d_null_space]") {
     SECTION("2 * 2 Matrix 1"){
         Matrix<double> M { { -4, 3}, {4, -3}};
-        std::vector<double> Solution = FindOneDimNullSpace(M);
-        std::vector<double> Expected {3, 4};
+        std::vector<Fraction> Solution = FindOneDimNullSpace(M);
+        std::vector<Fraction> Expected {Fraction(3), Fraction(4)};
         HelpTestMatrixOperator(Solution, Expected);
     }
 }
