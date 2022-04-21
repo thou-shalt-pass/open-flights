@@ -29,21 +29,44 @@ int main() {
     // FilterAirports(std::cout, std::cin, set);
     // FilterAirlines(std::cout, std::cin, set);
 
-    std::vector<double> importance = Importance(adj_list, 1);
-    std::cout << "sum: " << std::accumulate(importance.begin(), importance.end(), 0.0) << "\n\n";
-    
-    std::priority_queue<std::pair<double, size_t> > pq;
-    for (size_t v = 0; v < importance.size(); ++v) {
-        pq.emplace(importance[v], v);
+    {
+        std::vector<double> importance = ImportanceIteration(adj_list, 10);
+        std::cout << "sum: " << std::accumulate(importance.begin(), importance.end(), 0.0) << "\n\n";
+        
+        std::priority_queue<std::pair<double, size_t> > pq;
+        for (size_t v = 0; v < importance.size(); ++v) {
+            pq.emplace(importance[v], v);
+        }
+
+        for (size_t i = 0; i < 50; ++i) {
+            double imp = pq.top().first;
+            size_t v = pq.top().second;
+            printf("#%2d: %.10f | %5d | %-18s | %3s\n", 
+                (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
+                data.GetNode(v).iata_code.c_str());
+            pq.pop();
+        }
     }
 
-    for (size_t i = 0; i < 50; ++i) {
-        double imp = pq.top().first;
-        size_t v = pq.top().second;
-        printf("#%2d: %.10f | %5d | %-18s | %3s\n", 
-            (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
-            data.GetNode(v).iata_code.c_str());
-        pq.pop();
+    printf("---------------------------------");
+
+    {
+        std::vector<double> importance = ImportanceEigenvector(adj_list);
+        std::cout << "sum: " << std::accumulate(importance.begin(), importance.end(), 0.0) << "\n\n";
+        
+        std::priority_queue<std::pair<double, size_t> > pq;
+        for (size_t v = 0; v < importance.size(); ++v) {
+            pq.emplace(importance[v], v);
+        }
+
+        for (size_t i = 0; i < 50; ++i) {
+            double imp = pq.top().first;
+            size_t v = pq.top().second;
+            printf("#%2d: %.10f | %5d | %-18s | %3s\n", 
+                (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
+                data.GetNode(v).iata_code.c_str());
+            pq.pop();
+        }
     }
     
     return 0;
