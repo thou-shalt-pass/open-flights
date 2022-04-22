@@ -7,19 +7,46 @@ tests_importance: bin/tests_importance
 tests_matrix_operation: bin/tests_matrix_operation
 tests_strongly_connected_components: bin/tests_strongly_connected_components
 
-bin/main: ./src/data.cpp ./src/main.cpp ./src/strongly_connected_components.cpp ./src/importance.cpp ./src/matrix_operation.cpp
+bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_importance: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_importance.cpp ./src/importance.cpp ./src/matrix_operation.cpp
+bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_matrix_operation: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_matrix_operation.cpp ./src/matrix_operation.cpp
+bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_matrix_operation.o ./obj/matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_strongly_connected_components: reserve_obj/catch.o ./tests/tests_utilities.cpp ./tests/tests_strongly_connected_components.cpp ./src/strongly_connected_components.cpp
+bin/tests_strongly_connected_components: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_strongly_connected_components.o ./obj/strongly_connected_components.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-reserve_obj/catch.o: tests/catch.cc
+obj/data.o: ./src/data.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/main.o: ./src/main.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/matrix_operation.o: ./src/matrix_operation.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/importance.o: ./src/importance.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/strongly_connected_components.o: ./src/strongly_connected_components.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/tests_matrix_operation.o: ./tests/tests_matrix_operation.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/tests_importance.o: ./tests/tests_importance.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/tests_strongly_connected_components.o: ./tests/tests_strongly_connected_components.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+obj/tests_utilities.o: tests/tests_utilities.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+reserve_obj/catch.o: tests/catch.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 .DEFAULT_GOAL := main
