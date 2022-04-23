@@ -63,3 +63,27 @@ Finish implementing Pagerank algorithm, check if the result converges as iterati
 - Extract the largest set of strongly connected components and run PageRank on that to check if our implementation is correct or not
 - Implment Floy-Warshall algorithm to find the shortest path
 - Add more test cases to check if our DFS and strongly connected components are running properly
+
+## 4/23/2022
+
+### Goal of the week
+
+Implement test cases for strongly connected components, DFS; implement Floyd-Warshall algorithm;
+
+### Tasks Accomplished
+
+- Yirong Chen: implemented helper function (for testing) and test cases for DFS 
+- Leo Luo: implemented test cases for strongly connected components
+- Yanzhen Shen: implemented Floyd-Warshall algorithm
+
+### Problem Encountered
+
+- `ImportanceEigenvector` does not give expected output because of approximation error caused by `double`. We substitude double with `fraction` to solve this.
+- However, `fraction` is incredible slow when solving the eigenvector 
+
+### Plan for Next Week
+
+- Finish writing readme on github
+- Finish `results.md`
+- Answer the leading question to our project (shortest path between given airports and most important airports)
+
