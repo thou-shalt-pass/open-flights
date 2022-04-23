@@ -6,9 +6,18 @@
 /**
  * @brief find the importance value of each airport by using PageRank
  * 
- * @param graph `graph[i][j] == kNoAirline` if and only if there is no airline between i and j
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @param iteration_times the number of iterations
  * @return `vector[i] < vector[j]` if and only if i is less important than j
  */
-std::vector<double> Importance(const AdjList& graph);
+std::vector<double> ImportanceIteration(const AdjList& graph, unsigned interation_half);
+
+/**
+ * @brief find the importance value of each airport by using PageRank
+ * 
+ * @param graph adjacency matrix of a simple, directed, strongly connected graph
+ * @return `vector[i] < vector[j]` if and only if i is less important than j
+ */
+std::vector<double> ImportanceEigenvector(const AdjList& graph);
 
 #endif

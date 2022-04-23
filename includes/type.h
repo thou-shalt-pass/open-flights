@@ -13,6 +13,9 @@ constexpr unsigned long long kNoAirline = std::numeric_limits<unsigned>::max();
 
 struct Edge {
 	unsigned distance;
+
+	Edge() {}
+	Edge(unsigned distance) : distance(distance) {}
 };
 
 struct Node{
@@ -21,6 +24,14 @@ struct Node{
 	std::string iata_code;
 	double longitude;
 	double latitude;
+
+	Node() {}
+	Node(std::string&& city, std::string&& airport_name, std::string&& iata_code, 
+		double longitude, double latitude) 
+		: city(std::forward<std::string>(city)), 
+		airport_name(std::forward<std::string>(airport_name)), 
+		iata_code(std::forward<std::string>(iata_code)), 
+		longitude(longitude), latitude(latitude) {}
 };
 
 using AdjList = std::vector<std::list<size_t> >;

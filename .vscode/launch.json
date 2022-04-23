@@ -2,6 +2,30 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "debug main gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make main",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
             "name": "debug tests_importance gdb",
             "type": "cppdbg",
             "request": "launch",
@@ -24,7 +48,79 @@
             ],
             "preLaunchTask": "make tests_importance",
             "miDebuggerPath": "/usr/bin/gdb"
-        }
+        },
+        {
+            "name": "debug tests_matrix_operation gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/tests_matrix_operation",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make tests_matrix_operation",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "debug tests_strongly_connected_components gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/tests_strongly_connected_components",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make tests_strongly_connected_components",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "debug tests_dfs gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/tests_dfs",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make tests_dfs",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
     ],
     "inputs": [
         {
