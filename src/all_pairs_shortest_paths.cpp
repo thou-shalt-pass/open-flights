@@ -1,5 +1,5 @@
 #include "all_pairs_shortest_paths.h"
 
-Matrix<Path> AllPairsShortestPaths(const AdjMatrix& graph) {
+Matrix<Edge> AllPairsShortestPaths(const AdjMatrix& graph) {
     
 }
