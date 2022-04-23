@@ -19,7 +19,7 @@ void HelpTestMatrixOperator(std::vector<Fraction>& Solution, std::vector<Fractio
 
 TEST_CASE("FindOneDimNullSpace(const Matrix<double>& matrix)", "[find_1d_null_space]") {
     SECTION("2 * 2 Matrix 1"){
-        Matrix<double> M { { -4, 3}, {4, -3}};
+        Matrix<Fraction> M { { -4, 3 }, { 4, -3 } };
         std::vector<Fraction> Solution = FindOneDimNullSpace(M);
         std::vector<Fraction> Expected {Fraction(3), Fraction(4)};
         HelpTestMatrixOperator(Solution, Expected);
