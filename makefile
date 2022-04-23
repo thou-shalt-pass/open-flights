@@ -6,6 +6,7 @@ main: bin/main
 tests_importance: bin/tests_importance
 tests_matrix_operation: bin/tests_matrix_operation
 tests_strongly_connected_components: bin/tests_strongly_connected_components
+tests_dfs: bin/tests_dfs
 
 bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -17,6 +18,9 @@ bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_strongly_connected_components: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_strongly_connected_components.o ./obj/strongly_connected_components.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+bin/tests_dfs: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_dfs.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 obj/data.o: ./src/data.cpp
@@ -43,6 +47,9 @@ obj/tests_importance.o: ./tests/tests_importance.cpp
 obj/tests_strongly_connected_components.o: ./tests/tests_strongly_connected_components.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
+obj/tests_dfs.o: ./tests/tests_dfs.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
 obj/tests_utilities.o: tests/tests_utilities.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
@@ -50,7 +57,7 @@ reserve_obj/catch.o: tests/catch.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 .DEFAULT_GOAL := main
-.PHONY: clean main tests_importance tests_matrix_operation tests_strongly_connected_components
+.PHONY: clean main tests_importance tests_matrix_operation tests_strongly_connected_components tests_dfs
 
 clean:
 	rm -rf ./bin/* ./obj/*
