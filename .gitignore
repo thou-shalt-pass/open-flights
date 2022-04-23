@@ -2,3 +2,4 @@ bin/**
 obj/**
 reserve_obj/**
 .vscode/**
+workspace.code-workspace
