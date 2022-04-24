@@ -74,7 +74,7 @@ Implement test cases for strongly connected components, DFS; implement Floyd-War
 
 - Yirong Chen: implemented helper function (for testing) and test cases for DFS 
 - Leo Luo: implemented test cases for strongly connected components
-- Yanzhen Shen: implemented Floyd-Warshall algorithm
+- Yanzhen Shen: implemented Floyd-Warshall algorithm and its test case
 
 ### Problem Encountered
 
