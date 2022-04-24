@@ -6,6 +6,7 @@ main: bin/main
 tests_importance: bin/tests_importance
 tests_matrix_operation: bin/tests_matrix_operation
 tests_strongly_connected_components: bin/tests_strongly_connected_components
+tests_all_pairs_shortest_paths: bin/tests_all_pairs_shortest_paths
 
 bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -17,6 +18,9 @@ bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_strongly_connected_components: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_strongly_connected_components.o ./obj/strongly_connected_components.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+bin/tests_all_pairs_shortest_paths: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_all_pairs_shortest_paths.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 obj/data.o: ./src/data.cpp
@@ -34,6 +38,9 @@ obj/importance.o: ./src/importance.cpp
 obj/strongly_connected_components.o: ./src/strongly_connected_components.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
+obj/all_pairs_shortest_paths.o: ./src/all_pairs_shortest_paths.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
 obj/tests_matrix_operation.o: ./tests/tests_matrix_operation.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
@@ -43,6 +50,9 @@ obj/tests_importance.o: ./tests/tests_importance.cpp
 obj/tests_strongly_connected_components.o: ./tests/tests_strongly_connected_components.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
+obj/tests_all_pairs_shortest_paths.o: ./tests/tests_all_pairs_shortest_paths.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
 obj/tests_utilities.o: tests/tests_utilities.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
@@ -50,7 +60,7 @@ reserve_obj/catch.o: tests/catch.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 .DEFAULT_GOAL := main
-.PHONY: clean main tests_importance tests_matrix_operation tests_strongly_connected_components
+.PHONY: clean main tests_importance tests_matrix_operation tests_strongly_connected_components tests_all_pairs_shortest_paths
 
 clean:
 	rm -rf ./bin/* ./obj/*

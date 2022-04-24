@@ -11,6 +11,13 @@ void CheckVectorDouble(const std::vector<double>& a, const std::vector<double>& 
     }
 }
 
+void CheckVectorSizet(const std::vector<size_t>& a, const std::vector<size_t>& b) {
+    REQUIRE( a.size() == b.size() );
+    for (size_t i = 0; i < a.size(); ++i) {
+        REQUIRE(a[i] == b[i]);
+    }
+}
+
 void CheckVectorDoubleWithScalarMultiple(const std::vector<double>& a, const std::vector<double>& b, double error) {
     double multiple = a[0] / b[0];
     std::vector<double> b_mult;
