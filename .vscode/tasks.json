@@ -45,5 +45,16 @@
 				"cwd": "${workspaceFolder}"
 			},
 		},
+		{
+			"type": "shell",
+			"label": "make tests_dfs",
+			"command": "make",
+			"args": [
+				"tests_dfs",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
 	]
 }
