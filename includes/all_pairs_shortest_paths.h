@@ -3,6 +3,22 @@
 
 #include "type.h"
 #include <iostream>
+#include <stdexcept>
+
+/*
+void Print2DVector(const Matrix<size_t>& vect);
+
+void Print2DVector(const Matrix<unsigned>& vect);
+
+void PrintVector(const std::vector<double> vect);
+*/
+
+/**
+ * @brief Check whether a graph is valid by checking all of its vectors has the same length
+ * 
+ * @param graph the adjacent matrix representation of the graph
+ */
+void isValid(const AdjMatrix& graph);
 
 /**
  * @brief find all shortest path between all pairs of airports by using Floyd-Warshall
@@ -22,10 +38,14 @@ std::pair<Matrix<unsigned>, Matrix<size_t> > AllPairsShortestPaths(const AdjMatr
  */
 Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance);
 
-/*
-void Print2DVector(const Matrix<size_t>& vect);
-
-void Print2DVector(const Matrix<unsigned>& vect);
-*/
+/**
+ * @brief Reconstruct the path from start to end using Matrix next generated from AllPairsShortestPath
+ * 
+ * @param next start vertex
+ * @param start end vertex
+ * @param end path matrix generated from AllPairsShortestPath
+ * @return std::vector<size_t> 
+ */
+std::vector<size_t> PathReconstruction(const Matrix<size_t>& next, size_t start, size_t end);
 
 #endif
