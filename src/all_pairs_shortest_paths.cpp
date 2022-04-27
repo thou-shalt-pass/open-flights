@@ -20,11 +20,42 @@ void Print2DVector(const Matrix<unsigned>& vect){
     }  
     std::cout <<std::endl;
 }
+
+void PrintVector(const std::vector<double> vect){
+    for(size_t i = 0; i < vect.size(); i++){
+        std::cout << vect[i] << " ";
+    }
+    std::cout <<std::endl;
+}
 */
+
+void isValid(const AdjMatrix& graph){
+    for(size_t i = 0; i < graph.size(); i++){
+        if(graph.size() != graph[i].size()){
+            throw std::runtime_error("Graph is not valid");
+        }
+    }
+}
+
+std::vector<size_t> PathReconstruction(const Matrix<size_t>& next, size_t start, size_t end) {
+   if(next[start][end] == kNoAirline){
+       return std::vector<size_t>();
+   }
+
+    std::vector<size_t> path;
+    path.push_back(start);
+    size_t current = start;
+    while(current != end){
+        current = next[current][end];
+        path.push_back(current);
+    }
+
+    return path;
+}
 
 Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
     size_t n = distance.size();
-    Matrix<size_t> next(n, std::vector<size_t>(n, std::numeric_limits<size_t>::max()));
+    Matrix<size_t> next(n, std::vector<size_t>(n, kNoAirline));
 
     for(size_t i = 0; i < n; i++){
         for(size_t j = 0; j < n; j++){
@@ -51,6 +82,8 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
 }
 
 std::pair<Matrix<unsigned>, Matrix<size_t> > AllPairsShortestPaths(const AdjMatrix& graph) {
+    isValid(graph);
+
     size_t n = graph.size();
     Matrix<unsigned> distance(n, std::vector<unsigned>(n));
     for(size_t i = 0; i < n; ++i){
@@ -59,7 +92,5 @@ std::pair<Matrix<unsigned>, Matrix<size_t> > AllPairsShortestPaths(const AdjMatr
         }
     }
     Matrix<size_t> next = FloydWarshall(distance);
-    //Print2DVector(distance);
-    //Print2DVector(next);
     return std::make_pair(std::move(distance), std::move(next));
 }
