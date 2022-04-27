@@ -126,12 +126,37 @@ bool operator== (const Fraction& f1, const Fraction& f2);
 
 std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix);
 
+std::vector< std::vector<Fraction> > Multiplication(std::vector< std::vector<Fraction> > factor1, std::vector< std::vector<Fraction> > factor2);
+
+/**
+ * @brief Swap row1 and row2
+ * 
+ * @param row1 
+ * @param row2 
+ */
 void rowSwap(std::vector<Fraction>& row1, std::vector<Fraction>& row2);
 
+/**
+ * @brief scale row by scalar
+ * 
+ * @param row 
+ * @param scalar 
+ */
 void rowScale(std::vector<Fraction>& row, double scalar);
 
+/**
+ * @brief Helper function to row elimination : row1 = row1 - row2 * scalar
+ * 
+ * @param row1 
+ * @param row2 
+ * @param scalar 
+ */
 void rowEliminate(std::vector<Fraction>& row1, std::vector<Fraction>& row2, Fraction scalar);
 
+/*
 void Print2Dvector(Matrix<Fraction>& matrix);
+
+void PrintSolution(std::vector<Fraction> solution);
+*/
 
 #endif
