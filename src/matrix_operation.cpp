@@ -1,4 +1,24 @@
 #include "matrix_operation.h"
+#include <stdexcept>
+
+/*
+void Print2Dvector(Matrix<Fraction>& matrix){
+    for(size_t i = 0; i < matrix.size(); i++){
+        for(size_t j = 0; j < matrix[0].size(); j++){
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout <<std::endl;
+    }
+}
+
+void PrintSolution(std::vector<Fraction> solution){
+    std::cout << "Print solution" <<std::endl;
+    for(size_t i = 0; i < solution.size(); i++){
+       std::cout << solution[i] << " ";
+    }
+    std::cout << std::endl;
+}
+*/
 
 void rowSwap(std::vector<Fraction>& row1, std::vector<Fraction>& row2){
     std::vector<Fraction> row_tmp = row1;
@@ -18,22 +38,86 @@ void rowEliminate(std::vector<Fraction>& row1, std::vector<Fraction>& row2, Frac
     }
 }
 
-void PrintVector(std::vector<Fraction> v){
-    for(size_t i = 0; i < v.size(); i++){
-       std::cout << v[i] << " ";
+Matrix<Fraction> Multiplication(Matrix<Fraction> factor1, Matrix<Fraction> factor2){
+  if( factor1[0].size() != factor2.size() ){
+    throw std::runtime_error("width of first matrix does not match the height of the second matrix");
+  }
+
+  Matrix<Fraction> product;
+  for(size_t i = 0; i < factor1.size(); i++){
+    std::vector<Fraction> p;
+    for(size_t j = 0; j < factor2[0].size(); j++){
+      Fraction sum = 0;
+      for(size_t k = 0; k < factor1[0].size(); k++){
+        sum = sum + factor1[i][k] * factor2[k][j];
+      }
+      p.push_back(sum);
     }
-    std::cout << std::endl;
+    product.push_back(p);
+  }
+
+  return product;
 }
 
-void Print2Dvector(Matrix<Fraction>& matrix){
-    for(size_t i = 0; i < matrix.size(); i++){
-        for(size_t j = 0; j < matrix[0].size(); j++){
-            std::cout << matrix[i][j] << " ";
+std::vector<Fraction> FindOneDimNullSpace(const std::vector<std::vector <Fraction> >& matrix){
+    std::vector<Fraction> solution;
+
+    std::vector<std::vector <Fraction> > matrix_cpy(matrix);
+
+    size_t free_variable_column;
+    size_t row = 0;
+    for(size_t col = 0; col < matrix_cpy.size(); col++){
+
+       bool free_variable = true;
+       size_t pivot_row;
+       for(size_t r = row; r < matrix_cpy.size(); r++){
+           if(matrix_cpy[r][col].numerator != 0){
+               free_variable = false;
+               pivot_row = r;
+               break;
+           }
+       }
+        
+       if(free_variable){
+           free_variable_column = col;
+           //std::cout << "Free Variable at " << free_variable_column << std::endl;
+           continue;
         }
-        std::cout <<std::endl;
+
+
+        rowSwap(matrix_cpy[row],matrix_cpy[pivot_row]);
+        rowScale(matrix_cpy[row], matrix_cpy[row][col].FindInverse());
+
+        for(size_t y = 0; y < matrix_cpy.size(); y++){
+            if(y != row && matrix_cpy[y][col].numerator != 0){
+                Fraction factor ( matrix_cpy[y][col] / matrix_cpy[row][col] );
+                rowEliminate(matrix_cpy[y], matrix_cpy[row], factor);
+            }
+        }
+
+        row++;
     }
+
+     //Eliminate the value at this column
+    for(size_t y = 0; y < matrix_cpy.size(); ++y){
+        if(y == free_variable_column){
+          solution.push_back(1);
+        }else if(matrix_cpy[y][y].numerator != 0){
+            Fraction factor ( matrix_cpy[y][free_variable_column] / matrix_cpy[y][y]);
+            factor = factor * (-1);
+            solution.push_back(factor);
+        }else{
+          solution.push_back(0);
+        }
+
+    }
+
+    //Print2Dvector(matrix_cpy);
+    return solution;
 }
 
+/*
+//Previous Version of FindOneDimNullSpace(general)
 std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix) {
     std::vector<Fraction> solution;
 
@@ -84,6 +168,7 @@ std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix) {
     
     return solution;
 }
+*/
 
 Fraction::Fraction(){
     numerator = 0;
