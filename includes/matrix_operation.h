@@ -126,6 +126,13 @@ bool operator== (const Fraction& f1, const Fraction& f2);
 
 std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix);
 
+/**
+ * @brief matrix multiplication, throw an exception when multplication is not valid
+ * 
+ * @param factor1 
+ * @param factor2 
+ * @return std::vector< std::vector<Fraction> > 
+ */
 std::vector< std::vector<Fraction> > Multiplication(std::vector< std::vector<Fraction> > factor1, std::vector< std::vector<Fraction> > factor2);
 
 /**
