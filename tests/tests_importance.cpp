@@ -54,7 +54,7 @@ TEST_CASE("ImportanceEigenvector(const AdjMatrix& graph)", "[importance_eigenvec
             { 0 },
             { 0, 2 }
         };
-        std::vector<double> importance = ImportanceEigenvector(graph);
+        std::vector<double> importance = ImportanceEigenvector(graph, 1e-15);
         CheckVectorDoubleWithScalarMultiple(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.05);
     }
 }

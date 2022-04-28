@@ -28,30 +28,24 @@ std::vector<double> ImportanceIteration(const AdjList& graph, unsigned iteration
     return importance_1;
 }
 
-Matrix<Fraction> Normalize(const AdjList& graph) {
+Matrix<double> Normalize(const AdjList& graph) {
     size_t n = graph.size();
-    Matrix<Fraction> result(n, std::vector<Fraction>(n, 0));
+    Matrix<double> result(n, std::vector<double>(n, 0));
     for (size_t u = 0; u < n; ++u) {
         if (graph[u].size() > 0) {
+            double d = 1.0 / graph[u].size();
             for (size_t v : graph[u]) {
-                result[v][u].numerator = 1;
-                result[v][u].denominator = graph[u].size();
+                result[v][u] = d;
             }
         }
     }
     return result;
 }
 
-std::vector<double> ImportanceEigenvector(const AdjList& graph) {
-    Matrix<Fraction> matrix = Normalize(graph);
+std::vector<double> ImportanceEigenvector(const AdjList& graph, double error) {
+    Matrix<double> matrix = Normalize(graph);
     for (size_t i = 0; i < graph.size(); ++i) {
-        matrix[i][i].numerator -= matrix[i][i].denominator;
+        --matrix[i][i];
     }
-    std::vector<Fraction> ker = FindOneDimNullSpace(matrix);
-    std::vector<double> result;
-    result.reserve(ker.size());
-    for (const Fraction& frac : ker) {
-        result.push_back(static_cast<double>(frac.numerator) / frac.denominator);
-    }
-    return result;
+    return FindOneDimNullSpace(matrix, error);
 }
