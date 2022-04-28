@@ -19,7 +19,7 @@ int main() {
     //     }
     // }
 
-    std::vector<double> importance = Importance(adj_list, 1);
+    std::vector<double> importance = ImportanceEigenvector(adj_list);
     // std::cout << std::accumulate(importance.begin(), importance.end(), 0.0) << std::endl;
 
     return 0;

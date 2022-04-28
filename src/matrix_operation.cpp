@@ -1,9 +1,7 @@
 #include "matrix_operation.h"
 
 void rowSwap(std::vector<double>& row1, std::vector<double>& row2){
-    std::vector<double> row_tmp = row1;
-    row1 = row2;
-    row2 = row_tmp;
+    row1.swap(row2);
 }
 
 void rowScale(std::vector<double>& row, double scalar){
