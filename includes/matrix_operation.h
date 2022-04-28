@@ -4,7 +4,7 @@
 #include "type.h"
 #include <iostream>
 
-std::vector<double> FindOneDimNullSpace(const Matrix<double>& matrix);
+std::vector<double> FindOneDimNullSpace(const Matrix<double>& matrix, double error);
 
 void rowSwap(std::vector<double>& row1, std::vector<double>& row2);
 

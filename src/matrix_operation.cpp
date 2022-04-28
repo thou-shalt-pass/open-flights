@@ -32,7 +32,7 @@ void Print2Dvector(Matrix<double>& matrix){
     }
 }
 
-std::vector<double> FindOneDimNullSpace(const Matrix<double>& matrix) {
+std::vector<double> FindOneDimNullSpace(const Matrix<double>& matrix, double error) {
     std::vector<double> solution;
 
     Matrix<double> matrix_cpy = matrix;
@@ -41,7 +41,8 @@ std::vector<double> FindOneDimNullSpace(const Matrix<double>& matrix) {
     for(size_t col = 0; col < matrix_cpy[0].size(); ++col){
         size_t i = row;
         while(i != matrix_cpy.size()){
-            if(matrix_cpy[i][col] != 0){
+            // if(matrix_cpy[i][col] != 0){
+            if(std::abs(matrix_cpy[i][col]) > error){
                 break;
             }
             ++i;
