@@ -9,7 +9,7 @@ tests_strongly_connected_components: bin/tests_strongly_connected_components
 tests_all_pairs_shortest_paths: bin/tests_all_pairs_shortest_paths
 tests_dfs: bin/tests_dfs
 
-bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o
+bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/matrix_operation.o

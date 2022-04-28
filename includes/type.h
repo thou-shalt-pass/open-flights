@@ -9,7 +9,7 @@
 template <typename T>
 using Matrix = std::vector<std::vector<T> >;
 
-constexpr unsigned long long kNoAirline = std::numeric_limits<unsigned>::max();
+constexpr unsigned kNoAirline = (std::numeric_limits<unsigned>::max() >> 1) - 100000;
 
 struct Edge {
 	unsigned distance;

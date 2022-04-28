@@ -56,5 +56,16 @@
 				"cwd": "${workspaceFolder}"
 			},
 		},
+		{
+			"type": "shell",
+			"label": "make tests_all_pairs_shortest_paths",
+			"command": "make",
+			"args": [
+				"tests_all_pairs_shortest_paths",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
 	]
 }
