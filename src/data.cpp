@@ -1,9 +1,8 @@
-#include <fstream>
-#include <iostream>
+#include <cmath>
 #include <istream>
+#include <ostream>
 #include <stdexcept>
 #include <string>
-#include <cmath>
 #include <unordered_set>
 
 #include "data.h"
@@ -43,28 +42,24 @@ std::vector<std::string> SplitAirportDataLine(const std::string& line) {
     return info;
 }
 
-Data::Data(const std::string& airport_filename, 
-    const std::string& airline_filename) {
-    ReadAirport(airport_filename);
-    ReadAirline(airline_filename);
+Data::Data(std::istream& airport_is, std::istream& airline_is) {
+    ReadAirport(airport_is);
+    ReadAirline(airline_is);
 }
 
-void Data::ReadAirport(const std::string& airport_filename) {
-    std::ifstream ifs { airport_filename };
-    if (!ifs.is_open()) { throw std::runtime_error("invalid file path."); }
-
-    // read each line
+void Data::ReadAirport(std::istream& airport_is) {
     std::string line;
-    while (std::getline(ifs, line)) {
+    while (std::getline(airport_is, line)) {
         std::vector<std::string> info = SplitAirportDataLine(line);
-        idx_to_node_.emplace_back(std::forward<std::string>(info[0]), 
-            std::forward<std::string>(info[1]), 
-            std::forward<std::string>(info[2]), 
+        idx_to_node_.emplace_back(std::move(info[0]), 
+            std::move(info[1]), 
+            std::move(info[2]), 
             std::stod(info[3]), std::stod(info[4]));
         code_to_idx_.emplace(idx_to_node_.back().iata_code, 
             idx_to_node_.size() - 1);
     }
 }
+
 // convert degrees to radian
 long double Data::ToRadiant(const long double degree) {
     long double ratio = (M_PI) / 180;
@@ -88,17 +83,14 @@ unsigned Data::Distance(long double lat1, long double long1, long double lat2, l
 
 }
  
-void Data::ReadAirline(const std::string& airline_filename) {
+void Data::ReadAirline(std::istream& airline_is) {
     size_t airport_size = idx_to_node_.size();
     adj_list_set_.resize(airport_size);
     adj_list_.reserve(airport_size);
     adj_matrix_.resize(airport_size, std::vector<Edge>(airport_size, kNoAirline));
 
-    std::ifstream ifs { airline_filename };
-    if (!ifs.is_open()) { throw std::runtime_error("invalid file path."); }
-    // read each line
     std::string line;
-    while (std::getline(ifs, line)) {
+    while (std::getline(airline_is, line)) {
         std::string src_code(line.begin(), line.begin() + 3), 
             dst_code(line.begin() + 4, line.begin() + 7);
         size_t src_idx = code_to_idx_.at(src_code);

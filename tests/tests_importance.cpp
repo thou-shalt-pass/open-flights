@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "tests_utilities.h"
 
 #include "data.h"
@@ -168,7 +170,8 @@ TEST_CASE("mutual test", "[mutual]") {
 }
 
 TEST_CASE("mutal test actual data scc", "[mutual_actual]") {
-    Data data("data/airport_scc.csv", "data/route_scc.csv");
+    std::ifstream airport_is("data/airport_scc.csv"), airline_is("data/route_scc.csv");
+    Data data(airport_is, airline_is);
     const AdjList& adj_list = data.GetAdjList();
     std::vector<double> it_result = ImportanceIteration(adj_list, 5000);
     std::vector<double> lu_result = ImportanceEigenvectorByLU(adj_list);
@@ -179,4 +182,6 @@ TEST_CASE("mutal test actual data scc", "[mutual_actual]") {
     diff_peak_gaussian_it = CheckVectorDoubleWithScalarMultiple(gaussian_result, it_result, 5e-5);
     printf("diff_peak_lu_gaussian = %f\ndiff_peak_lu_it = %f\ndiff_peak_gaussian_it = %f\n", 
         diff_peak_lu_gaussian, diff_peak_lu_it, diff_peak_gaussian_it);
+    airport_is.close();
+    airline_is.close();
 }
