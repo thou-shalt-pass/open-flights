@@ -1,5 +1,6 @@
 #include "tests_utilities.h"
 
+#include "data.h"
 #include "type.h"
 
 #include "importance.h"
@@ -13,7 +14,7 @@ TEST_CASE("ImportanceIteration(const AdjList& graph, unsigned iteration_times)",
             { 0, 2 }
         };
         std::vector<double> importance = ImportanceIteration(graph, 1000);
-        CheckVectorDouble(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.01);
+        CheckVectorDoubleWithScalarMultiple(importance, { 2, 2.0 / 3, 1.5, 1 }, 1e-10);
     }
     SECTION("strongly connected 2") {
         AdjList graph {
@@ -22,7 +23,7 @@ TEST_CASE("ImportanceIteration(const AdjList& graph, unsigned iteration_times)",
             { 0 },
         };
         std::vector<double> importance = ImportanceIteration(graph, 1000);
-        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-15);;
+        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-10);;
     }
     // SECTION("nodes with no out-going edges 1") {
     //     AdjList graph {
@@ -64,7 +65,7 @@ TEST_CASE("ImportanceEigenvectorByLU(const AdjList& graph)", "[importance_lu]") 
             { 0, 2 }
         };
         std::vector<double> importance = ImportanceEigenvectorByLU(graph);
-        CheckVectorDoubleWithScalarMultiple(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.05);
+        CheckVectorDoubleWithScalarMultiple(importance, { 2, 2.0 / 3, 1.5, 1 }, 1e-10);
     }
     SECTION("strongly connected 2") {
         AdjList graph {
@@ -73,7 +74,7 @@ TEST_CASE("ImportanceEigenvectorByLU(const AdjList& graph)", "[importance_lu]") 
             { 0 },
         };
         std::vector<double> importance = ImportanceEigenvectorByLU(graph);
-        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-15);
+        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-10);
     }
 }
 
@@ -86,7 +87,7 @@ TEST_CASE("ImportanceEigenvectorByGaussian(const AdjList& graph)", "[importance_
             { 0, 2 }
         };
         std::vector<double> importance = ImportanceEigenvectorByGaussian(graph);
-        CheckVectorDoubleWithScalarMultiple(importance, { 0.38, 0.12, 0.29, 0.19 }, 0.05);
+        CheckVectorDoubleWithScalarMultiple(importance, { 2, 2.0 / 3, 1.5, 1 }, 1e-10);
     }
     SECTION("strongly connected 2") {
         AdjList graph {
@@ -95,7 +96,7 @@ TEST_CASE("ImportanceEigenvectorByGaussian(const AdjList& graph)", "[importance_
             { 0 },
         };
         std::vector<double> importance = ImportanceEigenvectorByGaussian(graph);
-        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-15);
+        CheckVectorDoubleWithScalarMultiple(importance, { 0.4, 0.2, 0.4 }, 1e-10);
     }
 }
 
@@ -111,8 +112,9 @@ TEST_CASE("mutual test", "[mutual]") {
         std::vector<double> it_result = ImportanceIteration(graph, 1000);
         std::vector<double> lu_result = ImportanceEigenvectorByLU(graph);
         std::vector<double> gaussian_result = ImportanceEigenvectorByGaussian(graph);
-        CheckVectorDoubleWithScalarMultiple(it_result, lu_result, 1e-5);
-        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-5);
+        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(lu_result, it_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(gaussian_result, it_result, 1e-10);
     }
     SECTION("strongly connected 4") {
         AdjList graph {
@@ -137,8 +139,9 @@ TEST_CASE("mutual test", "[mutual]") {
         std::vector<double> it_result = ImportanceIteration(graph, 1000);
         std::vector<double> lu_result = ImportanceEigenvectorByLU(graph);
         std::vector<double> gaussian_result = ImportanceEigenvectorByGaussian(graph);
-        CheckVectorDoubleWithScalarMultiple(it_result, lu_result, 1e-5);
-        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-5);
+        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(lu_result, it_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(gaussian_result, it_result, 1e-10);
     }
     SECTION("strongly connected 5") {
         AdjList graph {
@@ -158,7 +161,22 @@ TEST_CASE("mutual test", "[mutual]") {
         std::vector<double> it_result = ImportanceIteration(graph, 1000);
         std::vector<double> lu_result = ImportanceEigenvectorByLU(graph);
         std::vector<double> gaussian_result = ImportanceEigenvectorByGaussian(graph);
-        CheckVectorDoubleWithScalarMultiple(it_result, lu_result, 1e-5);
-        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-5);
+        CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(lu_result, it_result, 1e-10);
+        CheckVectorDoubleWithScalarMultiple(gaussian_result, it_result, 1e-10);
     }
+}
+
+TEST_CASE("mutal test actual data scc", "[mutual_actual]") {
+    Data data("data/airport_scc.csv", "data/route_scc.csv");
+    const AdjList& adj_list = data.GetAdjList();
+    std::vector<double> it_result = ImportanceIteration(adj_list, 5000);
+    std::vector<double> lu_result = ImportanceEigenvectorByLU(adj_list);
+    std::vector<double> gaussian_result = ImportanceEigenvectorByGaussian(adj_list);
+    double diff_peak_lu_gaussian, diff_peak_lu_it, diff_peak_gaussian_it;
+    diff_peak_lu_gaussian = CheckVectorDoubleWithScalarMultiple(lu_result, gaussian_result, 5e-5);
+    diff_peak_lu_it = CheckVectorDoubleWithScalarMultiple(lu_result, it_result, 5e-5);
+    diff_peak_gaussian_it = CheckVectorDoubleWithScalarMultiple(gaussian_result, it_result, 5e-5);
+    printf("diff_peak_lu_gaussian = %f\ndiff_peak_lu_it = %f\ndiff_peak_gaussian_it = %f\n", 
+        diff_peak_lu_gaussian, diff_peak_lu_it, diff_peak_gaussian_it);
 }
