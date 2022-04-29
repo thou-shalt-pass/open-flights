@@ -20,6 +20,7 @@ private:
 	void ReadAirline(const std::string& airline_filename);
 	std::vector<Node> idx_to_node_;// map index to node
 	std::unordered_map<std::string, size_t> code_to_idx_;// map code to idx
+	std::vector<std::unordered_set<size_t> > adj_list_set_;
 	AdjList adj_list_;
 	AdjMatrix adj_matrix_;
 };

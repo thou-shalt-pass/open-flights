@@ -90,7 +90,8 @@ unsigned Data::Distance(long double lat1, long double long1, long double lat2, l
  
 void Data::ReadAirline(const std::string& airline_filename) {
     size_t airport_size = idx_to_node_.size();
-    adj_list_.resize(airport_size);
+    adj_list_set_.resize(airport_size);
+    adj_list_.reserve(airport_size);
     adj_matrix_.resize(airport_size, std::vector<Edge>(airport_size, kNoAirline));
 
     std::ifstream ifs { airline_filename };
@@ -102,10 +103,14 @@ void Data::ReadAirline(const std::string& airline_filename) {
             dst_code(line.begin() + 4, line.begin() + 7);
         size_t src_idx = code_to_idx_.at(src_code);
         size_t dst_idx = code_to_idx_.at(dst_code);
-        adj_list_[src_idx].push_back(dst_idx);
+        adj_list_set_[src_idx].insert(dst_idx);
         adj_matrix_[src_idx][dst_idx].distance = Distance(idx_to_node_[src_idx].latitude, 
             idx_to_node_[src_idx].longitude, idx_to_node_[dst_idx].latitude, 
             idx_to_node_[dst_idx].longitude);
+    }
+
+    for (size_t i = 0; i < airport_size; ++i) {
+        adj_list_.emplace_back(adj_list_set_[i].begin(), adj_list_set_[i].end());
     }
 }
 
