@@ -9,91 +9,123 @@
 #include "importance.h"
 #include "strongly_connected_components.h"
 
+template <typename T>
+void VectorOutput(const std::vector<T>& vector, std::ostream& os) {
+    size_t n = vector.size();
+    for (size_t i = 0; i < n - 1; ++i) {
+        os << vector[i] << ',';
+    }
+    os << vector[n - 1] << '\n';
+}
+
+template <typename T>
+void MatrixOutput(const Matrix<T>& matrix, std::ostream& os) {
+    size_t n = matrix.size();
+    for (size_t i = 0; i < n; ++i) {
+        VectorOutput(matrix[i], os);
+    }
+}
+
+void ImportanceOutput(const Data& data, const std::vector<double>& pagerank_vec, std::ostream& os) {
+    size_t n = pagerank_vec.size();
+    // os << "PageRank vector sum: " << std::accumulate(pagerank_vec.begin(), pagerank_vec.end(), 0.0) << "\n\n";
+    std::vector<std::pair<double, size_t> > vec_pair;// [importance, idx]
+    vec_pair.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+        vec_pair.emplace_back(pagerank_vec[i], i);
+    }
+    std::sort(vec_pair.begin(), vec_pair.end(), 
+        [](const std::pair<double, size_t>& a, const std::pair<double, size_t>& b) { return a.first > b.first; });
+    for (size_t i = 0; i < n; ++i) {
+        double imp = vec_pair[i].first;
+        size_t v = vec_pair[i].second;
+        const Node& node = data.GetNode(v);
+        os << imp << ',' << v << ',' << node.iata_code << ',' << node.city << ',' << node.airport_name << ','
+            << node.longitude << ',' << node.latitude << '\n';
+        // printf("#%2s: %.10s | %5s | %-20s | %3s\n", "Order", "Importance", "Node Index", "City", "IATA Code");
+        // printf("#%2d: %.10f | %5d | %-20s | %3s\n", 
+        //     (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
+        //     data.GetNode(v).iata_code.c_str());
+    }
+}
+
 int main() {
-    std::ifstream airport_is("data/airport_scc.csv"), airline_is("data/route_scc.csv");
-    Data data(airport_is, airline_is);
-    const AdjList& adj_list = data.GetAdjList();
-    const AdjMatrix& adj_matrix = data.GetAdjMatrix();
-
-    auto importance_output = [&data](const std::vector<double>& pagerank_vec) {
-        std::cout << "sum: " << std::accumulate(pagerank_vec.begin(), pagerank_vec.end(), 0.0) << "\n\n";
-        
-        std::priority_queue<std::pair<double, size_t> > pq;
-        for (size_t v = 0; v < pagerank_vec.size(); ++v) {
-            pq.emplace(pagerank_vec[v], v);
-        }
-
-        for (size_t i = 0; i < 50; ++i) {
-            double imp = pq.top().first;
-            size_t v = pq.top().second;
-            printf("#%2d: %.10f | %5d | %-18s | %3s\n", 
-                (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
-                data.GetNode(v).iata_code.c_str());
-            pq.pop();
-        }
-    };
-
-    // std::list<std::list<size_t> > scc = StronglyConnectedComponents(adj_list);
-    // std::list<size_t>* largest_scc;
-    // size_t largest_scc_size = 0;
-    // for (std::list<size_t>& x : scc) {
-    //     if (x.size() > largest_scc_size) {
-    //         largest_scc_size = x.size();
-    //         largest_scc = &x;
-    //     }
-    // }
-
-    // std::unordered_set<std::string> set;
-    // for (size_t v : *largest_scc) {
-    //     set.insert(data.GetNode(v).iata_code);
-    // }
-
-    // FilterAirports(std::cout, std::cin, set);
-    // FilterAirlines(std::cout, std::cin, set);
-
-    // Matrix<unsigned> apsp_distance;
-    // Matrix<size_t> apsp_next;
-    // std::tie(apsp_distance, apsp_next) = AllPairsShortestPaths(adj_matrix);
-
-    // printf("---------------------------------\n");
-
-    // std::vector<double> importance_it = ImportanceIteration(adj_list, 5000);
-    // importance_output(importance_it);
+    std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
+        output_filename_airport_largest_scc("result/airport_largest_scc.csv"), 
+        output_filename_airline_largest_scc("result/airline_largest_scc.csv"), 
+        output_filename_importance_it("result/importance_by_iteration.csv"), 
+        output_filename_importance_lu("result/importance_by_lu_decomposition.csv"), 
+        output_filename_importance_gaussian("result/importance_by_gaussian_elimination.csv"), 
+        output_filename_apsp_distance("result/apsp_distance.csv"), 
+        output_filename_apsp_next("result/apsp_next.csv");
     
-    // printf("---------------------------------\n");
+    std::ifstream airport_ori_ifs(input_filename_airport), airline_ori_ifs(input_filename_airline);
+    Data data_ori(airport_ori_ifs, airline_ori_ifs);
+    airport_ori_ifs.close();
+    airline_ori_ifs.close();
+    
+    // TODO: DFS
 
-    // std::vector<double> importance_lu = ImportanceEigenvectorByLU(adj_list);
-    // importance_output(importance_lu);
+    // find strongly connect components
 
-    // printf("---------------------------------\n");
+    std::list<std::list<size_t> > scc = StronglyConnectedComponents(data_ori.GetAdjList());
+    std::list<size_t> *largest_scc;
+    size_t largest_scc_size = 0;
+    for (std::list<size_t>& x : scc) {
+        if (x.size() > largest_scc_size) {
+            largest_scc_size = x.size();
+            largest_scc = &x;
+        }
+    }
 
-    std::vector<double> importance_gaussian = ImportanceEigenvectorByGaussian(adj_list);
-    importance_output(importance_gaussian);
+    std::unordered_set<std::string> largest_scc_set;
+    for (size_t v : *largest_scc) {
+        largest_scc_set.insert(data_ori.GetNode(v).iata_code);
+    }
 
-    // printf("---------------------------------\n");
+    std::ifstream airport_is_filter(input_filename_airport), airline_is_filter(input_filename_airline);
+    std::ofstream airport_os_filter(output_filename_airport_largest_scc), airline_os_filter(output_filename_airline_largest_scc);
 
-    // std::priority_queue<std::pair<double, size_t> > pq;
-    // for (size_t v = 0; v < importance_it_pagerank_vec2.size(); ++v) {
-    //     pq.emplace(importance_it_pagerank_vec2[v], v);
-    // }
+    FilterAirports(airport_os_filter, airport_is_filter, largest_scc_set);
+    FilterAirlines(airline_os_filter, airline_is_filter, largest_scc_set);
 
-    // std::unordered_set<std::string> allowed_codes;
-    // for (size_t i = 0; i < 3; ++i) {
-    //     double imp = pq.top().first;
-    //     size_t v = pq.top().second;
-    //     allowed_codes.insert(data.GetNode(v).iata_code);
-    //     pq.pop();
-    // }
-    // std::ofstream airport_ofs("./data/airport_scc_top3.csv"), 
-    //     airline_ofs("./data/route_scc_top3.csv");
-    // std::ifstream airport_ifs("./data/airport_scc.csv"), 
-    //     airline_ifs("./data/route_scc.csv");
+    airport_is_filter.close();
+    airline_is_filter.close();
+    airport_os_filter.close();
+    airline_os_filter.close();
 
-    // FilterAirports(airport_ofs, airport_ifs, allowed_codes);
-    // FilterAirlines(airline_ofs, airline_ifs, allowed_codes);
+    std::ifstream airport_scc_ifs(output_filename_airport_largest_scc), airline_scc_ifs(output_filename_airline_largest_scc);
+    Data data_scc(airport_scc_ifs, airline_scc_ifs);
+    airport_scc_ifs.close();
+    airline_scc_ifs.close();
 
-    airport_is.close();
-    airline_is.close();
+    // importance
 
+    std::vector<double> importance_it = ImportanceIteration(data_scc.GetAdjList(), 5000);
+    std::ofstream importance_it_ofs(output_filename_importance_it);
+    ImportanceOutput(data_scc, importance_it, importance_it_ofs);
+    importance_it_ofs.close();
+    
+    std::vector<double> importance_lu = ImportanceEigenvectorByLU(data_scc.GetAdjList());
+    std::ofstream importance_lu_ofs(output_filename_importance_lu);
+    ImportanceOutput(data_scc, importance_lu, importance_lu_ofs);
+    importance_lu_ofs.close();
+
+    std::vector<double> importance_gaussian = ImportanceEigenvectorByGaussian(data_scc.GetAdjList());
+    std::ofstream importance_gaussian_ofs(output_filename_importance_gaussian);
+    ImportanceOutput(data_scc, importance_gaussian, importance_gaussian_ofs);
+    importance_gaussian_ofs.close();
+
+    // all pairs shortest path
+    
+    Matrix<unsigned> apsp_distance;
+    Matrix<size_t> apsp_next;
+    std::tie(apsp_distance, apsp_next) = AllPairsShortestPaths(data_ori.GetAdjMatrix());
+    std::ofstream apsp_distance_ofs(output_filename_apsp_distance), apsp_next_ofs(output_filename_apsp_next);
+    MatrixOutput(apsp_distance, apsp_distance_ofs);
+    MatrixOutput(apsp_next, apsp_next_ofs);
+    apsp_distance_ofs.close();
+    apsp_next_ofs.close();
+    
     return 0;
 }

@@ -66,6 +66,8 @@ long double Data::ToRadiant(const long double degree) {
     return (ratio * degree);
 }
 
+constexpr int kEarthRadius = 6371;
+
 // Haversine formula to calculate distance between 2 points on a sphere given longtitudes and latitudes
 unsigned Data::Distance(long double lat1, long double long1, long double lat2, long double long2) {
     lat1 = ToRadiant(lat1);
@@ -75,12 +77,8 @@ unsigned Data::Distance(long double lat1, long double long1, long double lat2, l
     long double dlong = long2 - long1;
     long double dlat = lat2 - lat1;
     long double result = pow(sin(dlat/2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlong/2), 2);
-    result = 2 * asin(sqrt(result));
-
-    // earth radius = 6371 km
-    result *= 6371;
-    return unsigned (result);
-
+    result = 2 * asin(sqrt(result)) * kEarthRadius;
+    return static_cast<unsigned>(result);
 }
  
 void Data::ReadAirline(std::istream& airline_is) {
@@ -93,6 +91,10 @@ void Data::ReadAirline(std::istream& airline_is) {
     while (std::getline(airline_is, line)) {
         std::string src_code(line.begin(), line.begin() + 3), 
             dst_code(line.begin() + 4, line.begin() + 7);
+        if (code_to_idx_.count(src_code) == 0 || code_to_idx_.count(dst_code) == 0) {
+            // ignore edges that contain nodes which are not exist
+            continue;
+        }
         size_t src_idx = code_to_idx_.at(src_code);
         size_t dst_idx = code_to_idx_.at(dst_code);
         adj_list_set_[src_idx].insert(dst_idx);
