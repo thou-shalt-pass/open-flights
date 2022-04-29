@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-std::vector<std::vector<double>> TwoDim(std::vector<double> matrix){
+std::vector<std::vector<double>> TwoDim(const std::vector<double> matrix){
     std::vector< std::vector<double> > matrix2D;
     for(size_t i = 0; i < matrix.size(); i++){
         std::vector<double> row;
@@ -16,7 +16,7 @@ std::vector<std::vector<double>> TwoDim(std::vector<double> matrix){
     return matrix2D;
 }
 
-void HelpTestMatrixOperator(std::vector<double>& Solution, std::vector<double>& Expected){
+void HelpTestMatrixOperator(const std::vector<double>& Solution, const std::vector<double>& Expected){
     double scalar = Solution[0] / Expected[0];
     for(size_t i = 1; i < Expected.size(); i++){
         REQUIRE(Solution[i] / Expected[i] == scalar);
@@ -33,7 +33,7 @@ std::vector<std::vector<double>> zeroVector(size_t n){
     return zero_vector;
 }
 
-Matrix<double> Multiplication(Matrix<double> factor1, Matrix<double> factor2){
+Matrix<double> Multiplication(const Matrix<double>& factor1, const Matrix<double>& factor2){
   if( factor1[0].size() != factor2.size() ){
     throw std::runtime_error("width of first matrix does not match the height of the second matrix");
   }
@@ -54,28 +54,24 @@ Matrix<double> Multiplication(Matrix<double> factor1, Matrix<double> factor2){
   return product;
 }
 
- TEST_CASE("FindOneDimNullSpace(const Matrix<double>& matrix)", "[find_1d_null_space]") {
-    SECTION("2 * 2 Matrix 1"){
+void CheckMatrix(const std::vector< std::vector<double> >& matrix1, const std::vector< std::vector<double> >& matrix2){
+     REQUIRE(matrix1.size() == matrix2.size());
+     REQUIRE(matrix1[0].size() == matrix2[0].size());
+
+     for(size_t i = 0; i < matrix1.size(); i++){
+        CheckVectorDouble(matrix1[i],matrix2[i], 1e-10);
+     }
+ }
+
+TEST_CASE("FindOneDimNullSpaceByLU(const Matrix<double>& matrix)", "[find_1d_null_space]") {
+    SECTION("2 * 2 Matrix"){
         Matrix<double> M { { double(-4), double(3)}, {double(4), double(-3)}};
         std::vector<double> Solution = FindOneDimNullSpaceByLU(M);
         std::vector<double> Expected {double(3), double(4)};
         HelpTestMatrixOperator(Solution, Expected);
     }
- }
 
- void CheckMatrix(const std::vector< std::vector<double> >& matrix1, const std::vector< std::vector<double> >& matrix2){
-     REQUIRE(matrix1.size() == matrix2.size());
-     REQUIRE(matrix1[0].size() == matrix2[0].size());
-
-     for(size_t i = 0; i < matrix1.size(); i++){
-         for(size_t j = 0; j < matrix1[0].size(); j++){
-             REQUIRE( std::abs(matrix1[i][j] - matrix2[i][j]) <= 1e-10);
-         }
-     }
- }
-
- TEST_CASE("One Dim Null Space 3 * 3"){
-    SECTION("3rd Column Free"){
+    SECTION("3*3 Matrix1"){
         Matrix<double> matrix {{2, 6, 10},
                                 {2, 9, 13}};
         Matrix<double >coefficient = { {double(1), double(2)} }; 
@@ -104,9 +100,7 @@ Matrix<double> Multiplication(Matrix<double> factor1, Matrix<double> factor2){
         std::vector< std::vector<double> > product = Multiplication(matrix_cpy, TwoDim(solution));
         CheckMatrix(product, zeroVector(3));
     }
-}
 
-TEST_CASE("One Dim Null Space 4 * 4"){
     SECTION("4th Column Free"){
         Matrix<double> matrix {{-5, -3, 2, 4},
                         {-10, -4, 6, 2},
@@ -136,4 +130,4 @@ TEST_CASE("One Dim Null Space 4 * 4"){
         Matrix<double> product = Multiplication(matrix_cpy, TwoDim(solution));
         CheckMatrix(product, zeroVector(4));
     }
-} 
+}
