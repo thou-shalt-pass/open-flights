@@ -8,13 +8,11 @@
 #include <unordered_map>
 #include <vector>
 
-void CheckDouble(double a, double b, double error);
+double CheckDouble(double a, double b, double error);
 
-void CheckVectorDouble(const std::vector<double>& a, const std::vector<double>& b, double error);
+double CheckVectorDouble(const std::vector<double>& a, const std::vector<double>& b, double error);
 
-void CheckVectorSizet(const std::vector<size_t>& a, const std::vector<size_t>& b);
-
-void CheckVectorDoubleWithScalarMultiple(const std::vector<double>& a, const std::vector<double>& b, double error);
+double CheckVectorDoubleWithScalarMultiple(const std::vector<double>& a, const std::vector<double>& b, double error);
 
 template <typename InputIterator>
 void CheckComb(InputIterator a_begin, InputIterator a_end, 
