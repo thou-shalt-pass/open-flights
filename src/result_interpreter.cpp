@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "all_pairs_shortest_paths.h"
 #include "data.h"
 
 int main() {
@@ -15,7 +16,7 @@ int main() {
         output_filename_apsp_next("result/apsp_next.csv"),
         output_unzip_cmd("tar -xf result.tar.gz");
 
-    // system(output_unzip_cmd.c_str());
+    system(output_unzip_cmd.c_str());
     std::string line;
 
     std::ifstream airport_ori_ifs(input_filename_airport), airline_ori_ifs(input_filename_airline);
@@ -77,7 +78,49 @@ int main() {
     importance_lu_ifs.close();
     importance_gaussian_ifs.close();
 
-    
+    std::cout << "Initialization finished\n> ";
+
+    while (std::getline(std::cin, line)) {
+        std::vector<std::string> spl = Split(line, ' ');
+        if (spl.size() == 0) {
+            continue;
+        }
+        if (spl[0] == "exit" || spl[0] == "q") {
+            std::cout << "Bye\n";
+            break;
+        }
+        if (spl[0] == "sp") {
+            // find the shortest path
+            if (spl.size() != 3) {
+                std::cout << "Usage: sp src-code dst-code\n";
+                continue;
+            }
+            size_t src, dst;
+            try {
+                src = data_ori.GetIdx(spl[1]);
+            } catch (const std::out_of_range& e) {
+                std::cout << "Invalid IATA code for source airport\n";
+                continue;
+            }
+            try {
+                dst = data_ori.GetIdx(spl[2]);
+            } catch (const std::out_of_range& e) {
+                std::cout << "Invalid IATA code for destination airport\n";
+                continue;
+            }
+            if (apsp_distance[src][dst] >= kNoAirline) {
+                std::cout << spl[1] << " and " << spl[2] << " are not connected\n";
+                continue;
+            }
+            std::cout << "Distance of the shortest path: " << apsp_distance[src][dst] << '\n';
+            std::vector<size_t> path = PathReconstruction(apsp_next, src, dst);
+            for (size_t i = 0; i < path.size() - 1; ++i) {
+                std::cout << data_ori.GetNode(path[i]).iata_code << " -> ";
+            }
+            std::cout << data_ori.GetNode(path[path.size() - 1]).iata_code << '\n';
+        }
+        std::cout << "> ";
+    }
 
     return 0;
 }

@@ -7,7 +7,7 @@
 
 #include "data.h"
 
-std::vector<std::string> Split(const std::string& line) {
+std::vector<std::string> Split(const std::string& line, char delimiter) {
     std::vector<std::string> info;
     bool quotation = false;
     std::string str;
@@ -20,7 +20,11 @@ std::vector<std::string> Split(const std::string& line) {
             if (curr == '"') {
                 quotation = true;
                 str.push_back('"');
-            } else if (curr == ',' || a == line.size() - 1) {
+            } else if (curr == delimiter) {
+                info.push_back(str);
+                str = "";
+            } else if (a == line.size() - 1) {
+                str.push_back(curr);
                 info.push_back(str);
                 str = "";
             } else {
@@ -49,7 +53,7 @@ Data::Data(std::istream& airport_is, std::istream& airline_is) {
 void Data::ReadAirport(std::istream& airport_is) {
     std::string line;
     while (std::getline(airport_is, line)) {
-        std::vector<std::string> info = Split(line);
+        std::vector<std::string> info = Split(line, ',');
         idx_to_node_.emplace_back(std::move(info[0]), 
             std::move(info[1]), 
             std::move(info[2]), 
@@ -113,10 +117,12 @@ const AdjMatrix& Data::GetAdjMatrix() const { return adj_matrix_; }
 
 const Node& Data::GetNode(size_t idx) const { return idx_to_node_[idx]; }
 
+size_t Data::GetIdx(const std::string& code) const { return code_to_idx_.at(code); }
+
 void FilterAirports(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
     while (std::getline(is, line)) {
-        std::vector<std::string> info = Split(line);
+        std::vector<std::string> info = Split(line, ',');
         if (allowed_codes.count(info[2]) > 0) {
             os << line << "\n";
         }

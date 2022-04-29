@@ -13,7 +13,7 @@ tests_dfs: bin/tests_dfs
 bin/algorithm_driver: ./obj/data.o ./obj/algorithm_driver.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/result_interpreter: ./obj/data.o ./obj/result_interpreter.o
+bin/result_interpreter: ./obj/data.o ./obj/result_interpreter.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/data.o
