@@ -7,9 +7,8 @@
 
 #include "data.h"
 
-std::vector<std::string> SplitAirportDataLine(const std::string& line) {
+std::vector<std::string> Split(const std::string& line) {
     std::vector<std::string> info;
-    info.reserve(5);
     bool quotation = false;
     std::string str;
 
@@ -50,7 +49,7 @@ Data::Data(std::istream& airport_is, std::istream& airline_is) {
 void Data::ReadAirport(std::istream& airport_is) {
     std::string line;
     while (std::getline(airport_is, line)) {
-        std::vector<std::string> info = SplitAirportDataLine(line);
+        std::vector<std::string> info = Split(line);
         idx_to_node_.emplace_back(std::move(info[0]), 
             std::move(info[1]), 
             std::move(info[2]), 
@@ -117,7 +116,7 @@ const Node& Data::GetNode(size_t idx) const { return idx_to_node_[idx]; }
 void FilterAirports(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
     while (std::getline(is, line)) {
-        std::vector<std::string> info = SplitAirportDataLine(line);
+        std::vector<std::string> info = Split(line);
         if (allowed_codes.count(info[2]) > 0) {
             os << line << "\n";
         }

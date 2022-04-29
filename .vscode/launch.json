@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug main gdb",
+            "name": "debug algorithm_driver gdb",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/main",
+            "program": "${workspaceFolder}/bin/algorithm_driver",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -22,7 +22,31 @@
                     "text": "set args ${input:gdb-debugger-args}"
                 }
             ],
-            "preLaunchTask": "make main",
+            "preLaunchTask": "make algorithm_driver",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "debug result_interpreter gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/result_interpreter",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make result_interpreter",
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {

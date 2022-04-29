@@ -26,6 +26,8 @@ private:
 	AdjMatrix adj_matrix_;
 };
 
+std::vector<std::string> Split(const std::string& line);
+
 void FilterAirports(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes);
 void FilterAirlines(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes);
 

@@ -3,10 +3,21 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "make main",
+			"label": "make algorithm_driver",
 			"command": "make",
 			"args": [
-				"main",
+				"algorithm_driver",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+		{
+			"type": "shell",
+			"label": "make result_interpreter",
+			"command": "make",
+			"args": [
+				"result_interpreter",
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"

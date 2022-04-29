@@ -40,8 +40,9 @@ void ImportanceOutput(const Data& data, const std::vector<double>& pagerank_vec,
         double imp = vec_pair[i].first;
         size_t v = vec_pair[i].second;
         const Node& node = data.GetNode(v);
-        os << imp << ',' << v << ',' << node.iata_code << ',' << node.city << ',' << node.airport_name << ','
-            << node.longitude << ',' << node.latitude << '\n';
+        os << imp << ',' << v << '\n';
+        // os << imp << ',' << v << ',' << node.iata_code << ',' << node.city << ',' << node.airport_name << ','
+        //     << node.longitude << ',' << node.latitude << '\n';
         // printf("#%2s: %.10s | %5s | %-20s | %3s\n", "Order", "Importance", "Node Index", "City", "IATA Code");
         // printf("#%2d: %.10f | %5d | %-20s | %3s\n", 
         //     (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
@@ -57,15 +58,17 @@ int main() {
         output_filename_importance_lu("result/importance_by_lu_decomposition.csv"), 
         output_filename_importance_gaussian("result/importance_by_gaussian_elimination.csv"), 
         output_filename_apsp_distance("result/apsp_distance.csv"), 
-        output_filename_apsp_next("result/apsp_next.csv");
+        output_filename_apsp_next("result/apsp_next.csv"), 
+        output_mkdir_cmd("mkdir result"), 
+        output_zip_cmd("tar -zcvf result.tar.gz result");
+
+    system(output_mkdir_cmd.c_str());
     
     std::ifstream airport_ori_ifs(input_filename_airport), airline_ori_ifs(input_filename_airline);
     Data data_ori(airport_ori_ifs, airline_ori_ifs);
     airport_ori_ifs.close();
     airline_ori_ifs.close();
     
-    // TODO: DFS
-
     // find strongly connect components
 
     std::list<std::list<size_t> > scc = StronglyConnectedComponents(data_ori.GetAdjList());
@@ -126,6 +129,8 @@ int main() {
     MatrixOutput(apsp_next, apsp_next_ofs);
     apsp_distance_ofs.close();
     apsp_next_ofs.close();
+
+    system(output_zip_cmd.c_str());
     
     return 0;
 }
