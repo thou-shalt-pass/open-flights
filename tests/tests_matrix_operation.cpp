@@ -64,7 +64,7 @@ void CheckMatrix(const std::vector< std::vector<double> >& matrix1, const std::v
  }
 
 TEST_CASE("FindOneDimNullSpaceByLU(const Matrix<double>& matrix)", "[find_1d_null_space]") {
-    SECTION("2 * 2 Matrix"){
+    SECTION("2*2 Matrix"){
         Matrix<double> M { { double(-4), double(3)}, {double(4), double(-3)}};
         std::vector<double> Solution = FindOneDimNullSpaceByLU(M);
         std::vector<double> Expected {double(3), double(4)};
@@ -87,7 +87,7 @@ TEST_CASE("FindOneDimNullSpaceByLU(const Matrix<double>& matrix)", "[find_1d_nul
         CheckMatrix(product, zeroVector(3));
     }
 
-    SECTION("3rd Column Free"){
+    SECTION("3*3 Column Free"){
         Matrix<double> matrix {{3, 5, 7},
                                {-1, 4, 9}};
         Matrix<double >coefficient = { {double(4), double(6)} };
@@ -101,7 +101,7 @@ TEST_CASE("FindOneDimNullSpaceByLU(const Matrix<double>& matrix)", "[find_1d_nul
         CheckMatrix(product, zeroVector(3));
     }
 
-    SECTION("4th Column Free"){
+    SECTION("4*4 Column Free"){
         Matrix<double> matrix {{-5, -3, 2, 4},
                         {-10, -4, 6, 2},
                         {-20, -6, 17, 0}};
@@ -116,7 +116,7 @@ TEST_CASE("FindOneDimNullSpaceByLU(const Matrix<double>& matrix)", "[find_1d_nul
         CheckMatrix(product, zeroVector(4));
     }
 
-    SECTION("4th Column Free"){
+    SECTION("4*4 Column Free"){
         Matrix<double> matrix {{3, 4, 2, 49},
                         {1, 1, 4, 7},
                         {0, 9, 2, 0}};
