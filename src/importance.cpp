@@ -1,7 +1,7 @@
 #include "importance.h"
 #include "matrix_operation.h"
 
-void PageRank(const AdjList& graph, std::vector<double>& curr_importance, 
+void PageRank(const AdjList& graph, const std::vector<double>& curr_importance, 
     std::vector<double>& next_importance) {
     next_importance.clear();
     next_importance.resize(graph.size(), 0);
