@@ -10,7 +10,8 @@
 #include "strongly_connected_components.h"
 
 int main() {
-    Data data("data/airport_scc.csv", "data/route_scc.csv");
+    std::ifstream airport_is("data/airport_scc.csv"), airline_is("data/route_scc.csv");
+    Data data(airport_is, airline_is);
     const AdjList& adj_list = data.GetAdjList();
     const AdjMatrix& adj_matrix = data.GetAdjMatrix();
 
@@ -56,20 +57,20 @@ int main() {
 
     // printf("---------------------------------\n");
 
-    std::vector<double> importance_it = ImportanceIteration(adj_list, 5000);
-    importance_output(importance_it);
+    // std::vector<double> importance_it = ImportanceIteration(adj_list, 5000);
+    // importance_output(importance_it);
     
-    printf("---------------------------------\n");
+    // printf("---------------------------------\n");
 
-    std::vector<double> importance_lu = ImportanceEigenvectorByLU(adj_list);
-    importance_output(importance_lu);
+    // std::vector<double> importance_lu = ImportanceEigenvectorByLU(adj_list);
+    // importance_output(importance_lu);
 
-    printf("---------------------------------\n");
+    // printf("---------------------------------\n");
 
     std::vector<double> importance_gaussian = ImportanceEigenvectorByGaussian(adj_list);
     importance_output(importance_gaussian);
 
-    printf("---------------------------------\n");
+    // printf("---------------------------------\n");
 
     // std::priority_queue<std::pair<double, size_t> > pq;
     // for (size_t v = 0; v < importance_it_pagerank_vec2.size(); ++v) {
@@ -90,6 +91,9 @@ int main() {
 
     // FilterAirports(airport_ofs, airport_ifs, allowed_codes);
     // FilterAirlines(airline_ofs, airline_ifs, allowed_codes);
+
+    airport_is.close();
+    airline_is.close();
 
     return 0;
 }

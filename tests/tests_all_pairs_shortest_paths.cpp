@@ -6,54 +6,30 @@
 
 #include "all_pairs_shortest_paths.h" 
 
-/*
-void PrintPath(std::vector<size_t> path){ 
-  for(size_t i = 0; i < path.size(); i++){
-    std::cout << path[i]; 
-    if(i != path.size() - 1){
-      std::cout << " -> ";
-    }
-  }
-  std::cout << std::endl;
-}
-
-void PrintAdjMatrix(const AdjMatrix matrix){
-    for(size_t i = 0; i < matrix.size(); i++){
-        for(size_t j = 0; j < matrix.size(); j++){
-            if(matrix[i][j].distance != kNoAirline){
-              std::cout << matrix[i][j].distance << " ";
-            }else{
-              std::cout << "max" << " ";
-            }
-        }      
-        std::cout << std::endl;
-    }  
-    std::cout <<std::endl;
-}
-*/
-
-void EdgeListToAdjMatrix(const std::vector<std::pair<size_t, size_t> > verticies, const std::vector<unsigned> weights, AdjMatrix& distance_){
+AdjMatrix EdgeListToAdjMatrix(const std::vector<std::pair<size_t, size_t> >& verticies, const std::vector<unsigned>& weights, size_t n) {
+    AdjMatrix mat_distance(n, std::vector<Edge>(n, kNoAirline));
     for(size_t i = 0; i < verticies.size(); i++){
         size_t start = verticies[i].first;
         size_t end = verticies[i].second;
         unsigned distance = weights[i];
-        distance_[start][end] = distance;
-        distance_[end][start] = distance;
+        mat_distance[start][end] = distance;
+        mat_distance[end][start] = distance;
     }
+    return mat_distance;
 }
 
 std::pair< std::vector<double>, std::vector<std::vector<size_t> > > AllPath(const std::pair<Matrix<unsigned>, Matrix<size_t>>& result){
    Matrix<size_t> paths;
-   std::vector<double> distance_;
-   for(size_t i = 0; i < result.second.size(); i++){
-        for(size_t j = i + 1; j < result.second.size(); j++){
-            distance_.push_back( result.first[i][j]);
+   std::vector<double> distance;
+   for (size_t i = 0; i < result.second.size(); ++i) {
+        for (size_t j = i + 1; j < result.second.size(); ++j) {
+            distance.push_back( result.first[i][j]);
             std::vector<size_t> path = PathReconstruction(result.second, i, j);
             paths.push_back(path);
         }
    }
    
-   return std::pair<std::vector<double>, std::vector<std::vector<size_t> > > (distance_, paths);
+   return std::make_pair(distance, paths);
 }
 
 TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Small Graph"){
@@ -143,9 +119,7 @@ TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Normal Graph"){
                                   2, 2, 4, 7, 13};
     std::vector< std::pair<size_t, size_t> > verticies { {0, 1}, {0, 2}, {1, 2}, {1, 4}, {2, 3},
                                                         {3, 4}, {4, 5}, {3, 5}, {5, 6}, {3, 6} };
-    AdjMatrix adjmatrix;
-    adjmatrix.resize(7, std::vector<Edge>(7,kNoAirline));
-    EdgeListToAdjMatrix(verticies, weight, adjmatrix);
+    AdjMatrix adjmatrix = EdgeListToAdjMatrix(verticies, weight, 7);
 
     std::pair< Matrix<unsigned>, Matrix<size_t> > distance_path = AllPairsShortestPaths(adjmatrix);
     Matrix<unsigned> distance = distance_path.first;
@@ -183,9 +157,7 @@ TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Normal Graph"){
                                                         {5, 4}, {4, 3}, {3, 1}, {1, 6}, {4, 8},
                                                         {3, 7}, {2, 5}, {0,1} };
 
-    AdjMatrix adjmatrix;
-    adjmatrix.resize(9, std::vector<Edge>(9,kNoAirline));
-    EdgeListToAdjMatrix(verticies, weight, adjmatrix);
+    AdjMatrix adjmatrix = EdgeListToAdjMatrix(verticies, weight, 9);
     std::pair< Matrix<unsigned>, Matrix<size_t> > distance_path = AllPairsShortestPaths(adjmatrix);
     Matrix<unsigned> distance = distance_path.first;
     Matrix<size_t> path = distance_path.second;

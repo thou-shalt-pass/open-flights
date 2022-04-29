@@ -4,11 +4,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
 #include "type.h"
 
 class Data {
 public:
-	Data(const std::string& airport_filename, const std::string& airline_filename);
+	Data(std::istream& airport_is, std::istream& airline_is);
 	const AdjList& GetAdjList() const;
 	const AdjMatrix& GetAdjMatrix() const;
 	long double ToRadiant(const long double degree);
@@ -16,8 +17,8 @@ public:
 	const Node& GetNode(size_t idx) const;
 
 private:
-	void ReadAirport(const std::string& airport_filename);
-	void ReadAirline(const std::string& airline_filename);
+	void ReadAirport(std::istream& airport_is);
+	void ReadAirline(std::istream& airline_is);
 	std::vector<Node> idx_to_node_;// map index to node
 	std::unordered_map<std::string, size_t> code_to_idx_;// map code to idx
 	std::vector<std::unordered_set<size_t> > adj_list_set_;
