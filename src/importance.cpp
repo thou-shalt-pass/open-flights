@@ -42,10 +42,18 @@ Matrix<double> Normalize(const AdjList& graph) {
     return result;
 }
 
-std::vector<double> ImportanceEigenvector(const AdjList& graph, double error) {
+std::vector<double> ImportanceEigenvectorByLU(const AdjList& graph) {
     Matrix<double> matrix = Normalize(graph);
     for (size_t i = 0; i < graph.size(); ++i) {
         --matrix[i][i];
     }
-    return FindOneDimNullSpace(matrix, error);
+    return FindOneDimNullSpaceByLU(matrix);
+}
+
+std::vector<double> ImportanceEigenvectorByGaussian(const AdjList& graph) {
+    Matrix<double> matrix = Normalize(graph);
+    for (size_t i = 0; i < graph.size(); ++i) {
+        --matrix[i][i];
+    }
+    return FindOneDimNullSpaceByGaussian(matrix);
 }
