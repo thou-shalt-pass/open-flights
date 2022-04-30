@@ -7,9 +7,8 @@
 
 #include "data.h"
 
-std::vector<std::string> SplitAirportDataLine(const std::string& line) {
+std::vector<std::string> Split(const std::string& line, char delimiter) {
     std::vector<std::string> info;
-    info.reserve(5);
     bool quotation = false;
     std::string str;
 
@@ -21,7 +20,11 @@ std::vector<std::string> SplitAirportDataLine(const std::string& line) {
             if (curr == '"') {
                 quotation = true;
                 str.push_back('"');
-            } else if (curr == ',' || a == line.size() - 1) {
+            } else if (curr == delimiter) {
+                info.push_back(str);
+                str = "";
+            } else if (a == line.size() - 1) {
+                str.push_back(curr);
                 info.push_back(str);
                 str = "";
             } else {
@@ -50,7 +53,7 @@ Data::Data(std::istream& airport_is, std::istream& airline_is) {
 void Data::ReadAirport(std::istream& airport_is) {
     std::string line;
     while (std::getline(airport_is, line)) {
-        std::vector<std::string> info = SplitAirportDataLine(line);
+        std::vector<std::string> info = Split(line, ',');
         idx_to_node_.emplace_back(std::move(info[0]), 
             std::move(info[1]), 
             std::move(info[2]), 
@@ -66,6 +69,8 @@ long double Data::ToRadiant(const long double degree) {
     return (ratio * degree);
 }
 
+constexpr int kEarthRadius = 6371;
+
 // Haversine formula to calculate distance between 2 points on a sphere given longtitudes and latitudes
 unsigned Data::Distance(long double lat1, long double long1, long double lat2, long double long2) {
     lat1 = ToRadiant(lat1);
@@ -75,12 +80,8 @@ unsigned Data::Distance(long double lat1, long double long1, long double lat2, l
     long double dlong = long2 - long1;
     long double dlat = lat2 - lat1;
     long double result = pow(sin(dlat/2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlong/2), 2);
-    result = 2 * asin(sqrt(result));
-
-    // earth radius = 6371 km
-    result *= 6371;
-    return unsigned (result);
-
+    result = 2 * asin(sqrt(result)) * kEarthRadius;
+    return static_cast<unsigned>(result);
 }
  
 void Data::ReadAirline(std::istream& airline_is) {
@@ -93,6 +94,10 @@ void Data::ReadAirline(std::istream& airline_is) {
     while (std::getline(airline_is, line)) {
         std::string src_code(line.begin(), line.begin() + 3), 
             dst_code(line.begin() + 4, line.begin() + 7);
+        if (code_to_idx_.count(src_code) == 0 || code_to_idx_.count(dst_code) == 0) {
+            // ignore edges that contain nodes which are not exist
+            continue;
+        }
         size_t src_idx = code_to_idx_.at(src_code);
         size_t dst_idx = code_to_idx_.at(dst_code);
         adj_list_set_[src_idx].insert(dst_idx);
@@ -112,10 +117,12 @@ const AdjMatrix& Data::GetAdjMatrix() const { return adj_matrix_; }
 
 const Node& Data::GetNode(size_t idx) const { return idx_to_node_[idx]; }
 
+size_t Data::GetIdx(const std::string& code) const { return code_to_idx_.at(code); }
+
 void FilterAirports(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
     while (std::getline(is, line)) {
-        std::vector<std::string> info = SplitAirportDataLine(line);
+        std::vector<std::string> info = Split(line, ',');
         if (allowed_codes.count(info[2]) > 0) {
             os << line << "\n";
         }

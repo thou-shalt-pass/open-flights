@@ -15,7 +15,7 @@ public:
 	long double ToRadiant(const long double degree);
 	unsigned Distance(long double lat1, long double long1, long double lat2, long double long2);
 	const Node& GetNode(size_t idx) const;
-
+	size_t GetIdx(const std::string& code) const;
 private:
 	void ReadAirport(std::istream& airport_is);
 	void ReadAirline(std::istream& airline_is);
@@ -25,6 +25,8 @@ private:
 	AdjList adj_list_;
 	AdjMatrix adj_matrix_;
 };
+
+std::vector<std::string> Split(const std::string& line, char delimiter);
 
 void FilterAirports(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes);
 void FilterAirlines(std::ostream& os, std::istream& is, const std::unordered_set<std::string>& allowed_codes);
