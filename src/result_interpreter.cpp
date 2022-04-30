@@ -6,8 +6,11 @@
 #include "all_pairs_shortest_paths.h"
 #include "data.h"
 
+
+
 int main() {
     std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
+        output_filename_scc("result/scc.csv"), 
         output_filename_airport_largest_scc("result/airport_largest_scc.csv"), 
         output_filename_airline_largest_scc("result/airline_largest_scc.csv"), 
         output_filename_importance_it("result/importance_by_iteration.csv"), 
@@ -32,23 +35,16 @@ int main() {
 
     size_t n_ori = data_ori.GetAdjList().size(), n_scc = data_scc.GetAdjList().size();
 
-    Matrix<unsigned> apsp_distance(n_ori, std::vector<unsigned>(n_ori));
-    Matrix<size_t> apsp_next(n_ori, std::vector<size_t>(n_ori));
-    std::ifstream apsp_distance_ifs(output_filename_apsp_distance), apsp_next_ifs(output_filename_apsp_next);
-    for (size_t i = 0; i < n_ori; ++i) {
-        for (size_t j = 0; j < n_ori - 1; ++j) {
-            std::getline(apsp_distance_ifs, line, ',');
-            apsp_distance[i][j] = std::stoul(line);
-            std::getline(apsp_next_ifs, line, ',');
-            apsp_next[i][j] = std::stoul(line);
+    std::vector<size_t> node_to_scc(n_ori, std::numeric_limits<size_t>::max());// maps node to scc
+    std::ifstream scc_is(output_filename_scc);
+    size_t scc_counter = 0;
+    while (std::getline(scc_is, line)) {
+        std::vector<std::string> spl = Split(line, ',');
+        for (const std::string& s : spl) {
+            node_to_scc[std::stoul(s)] = scc_counter;
         }
-        std::getline(apsp_distance_ifs, line, '\n');
-        apsp_distance[i][n_ori - 1] = std::stoul(line);
-        std::getline(apsp_next_ifs, line, '\n');
-        apsp_next[i][n_ori - 1] = std::stoul(line);
+        ++scc_counter;
     }
-    apsp_distance_ifs.close();
-    apsp_next_ifs.close();
 
     // node idx in the order of importance
     std::vector<size_t> importance_order(n_scc);
@@ -79,6 +75,24 @@ int main() {
     importance_lu_ifs.close();
     importance_gaussian_ifs.close();
 
+    Matrix<unsigned> apsp_distance(n_ori, std::vector<unsigned>(n_ori));
+    Matrix<size_t> apsp_next(n_ori, std::vector<size_t>(n_ori));
+    std::ifstream apsp_distance_ifs(output_filename_apsp_distance), apsp_next_ifs(output_filename_apsp_next);
+    for (size_t i = 0; i < n_ori; ++i) {
+        for (size_t j = 0; j < n_ori - 1; ++j) {
+            std::getline(apsp_distance_ifs, line, ',');
+            apsp_distance[i][j] = std::stoul(line);
+            std::getline(apsp_next_ifs, line, ',');
+            apsp_next[i][j] = std::stoul(line);
+        }
+        std::getline(apsp_distance_ifs, line, '\n');
+        apsp_distance[i][n_ori - 1] = std::stoul(line);
+        std::getline(apsp_next_ifs, line, '\n');
+        apsp_next[i][n_ori - 1] = std::stoul(line);
+    }
+    apsp_distance_ifs.close();
+    apsp_next_ifs.close();
+
     std::cout << "Initialization finished\n";
 
     while (true) {
@@ -92,7 +106,21 @@ int main() {
             std::cout << "Bye\n";
             break;
         }
-        if (spl[0] == "sp") {
+        if (spl[0] == "scc") {
+            // find the scc idx of the airport
+            if (spl.size() != 2) {
+                std::cout << "Usage: scc code\n";
+                continue;
+            }
+            size_t v;
+            try {
+                v = data_ori.GetIdx(spl[1]);
+            } catch (const std::out_of_range& e) {
+                std::cout << "Invalid IATA code\n";
+                continue;
+            }
+            std::cout << "The airport is in the strongly connected component " << node_to_scc[v] << '\n';
+        } else if (spl[0] == "sp") {
             // find the shortest path
             if (spl.size() != 3) {
                 std::cout << "Usage: sp src-code dst-code\n";
@@ -166,7 +194,7 @@ int main() {
                 rank, importance_it, importance_lu, importance_gaussian, 
                 node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
         } else {
-            std::cout << "Usage: \n- sp src-code dst-code\n- top limit\n- rank code\n";
+            std::cout << "Usage: \n- scc code\n- sp src-code dst-code\n- top limit\n- rank code\n";
         }
     }
 

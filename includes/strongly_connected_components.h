@@ -1,7 +1,7 @@
 #ifndef _STRONGLY_CONNECTED_COMPONENTS
 #define _STRONGLY_CONNECTED_COMPONENTS
 
-#include <list>
+#include <vector>
 
 #include "type.h"
 
@@ -12,6 +12,6 @@
  * @return collection of sets where each set represents a strongly connect component 
  * and contains nodes in the strongly connect component 
  */
-std::list<std::list<size_t> > StronglyConnectedComponents(const AdjList& graph);
+std::vector<std::vector<size_t> > StronglyConnectedComponents(const AdjList& graph);
 
 #endif

@@ -3,30 +3,34 @@
 #include <iostream>
 #include <numeric>
 #include <queue>
+#include <vector>
 
 #include "all_pairs_shortest_paths.h"
 #include "data.h"
 #include "importance.h"
 #include "strongly_connected_components.h"
 
-template <typename T>
-void VectorOutput(const std::vector<T>& vector, std::ostream& os) {
-    size_t n = vector.size();
-    for (size_t i = 0; i < n - 1; ++i) {
-        os << vector[i] << ',';
+template <typename InputIt>
+void VectorOutput(InputIt begin, InputIt end, std::ostream& os) {
+    if (begin == end) { return; }
+    os << *begin;
+    ++begin;
+    while (begin != end) {
+        os << ',' << *begin;
+        ++begin;
     }
-    os << vector[n - 1] << '\n';
+    os << '\n';
 }
 
-template <typename T>
-void MatrixOutput(const Matrix<T>& matrix, std::ostream& os) {
-    size_t n = matrix.size();
-    for (size_t i = 0; i < n; ++i) {
-        VectorOutput(matrix[i], os);
+template <typename InputIt>
+void MatrixOutput(InputIt begin, InputIt end, std::ostream& os) {
+    while (begin != end) {
+        VectorOutput(begin->cbegin(), begin->cend(), os);
+        ++begin;
     }
 }
 
-void ImportanceOutput(const Data& data, const std::vector<double>& pagerank_vec, std::ostream& os) {
+void ImportanceOutput(const std::vector<double>& pagerank_vec, std::ostream& os) {
     size_t n = pagerank_vec.size();
     // os << "PageRank vector sum: " << std::accumulate(pagerank_vec.begin(), pagerank_vec.end(), 0.0) << "\n\n";
     std::vector<std::pair<double, size_t> > vec_pair;// [importance, idx]
@@ -45,6 +49,7 @@ void ImportanceOutput(const Data& data, const std::vector<double>& pagerank_vec,
 
 int main() {
     std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
+        output_filename_scc("result/scc.csv"), 
         output_filename_airport_largest_scc("result/airport_largest_scc.csv"), 
         output_filename_airline_largest_scc("result/airline_largest_scc.csv"), 
         output_filename_importance_it("result/importance_by_iteration.csv"), 
@@ -64,18 +69,17 @@ int main() {
     
     // find strongly connect components
 
-    std::list<std::list<size_t> > scc = StronglyConnectedComponents(data_ori.GetAdjList());
-    std::list<size_t> *largest_scc;
-    size_t largest_scc_size = 0;
-    for (std::list<size_t>& x : scc) {
-        if (x.size() > largest_scc_size) {
-            largest_scc_size = x.size();
-            largest_scc = &x;
-        }
-    }
+    std::vector<std::vector<size_t> > scc = StronglyConnectedComponents(data_ori.GetAdjList());
+    std::sort(scc.begin(), scc.end(), [](const std::vector<size_t>& a, const std::vector<size_t>& b) {
+        return a.size() > b.size();
+    });
+
+    std::ofstream scc_os(output_filename_scc);
+    MatrixOutput(scc.cbegin(), scc.cend(), scc_os);
+    scc_os.close();
 
     std::unordered_set<std::string> largest_scc_set;
-    for (size_t v : *largest_scc) {
+    for (size_t v : scc.front()) {
         largest_scc_set.insert(data_ori.GetNode(v).iata_code);
     }
 
@@ -99,17 +103,17 @@ int main() {
 
     std::vector<double> importance_it = ImportanceIteration(data_scc.GetAdjList(), 5000);
     std::ofstream importance_it_ofs(output_filename_importance_it);
-    ImportanceOutput(data_scc, importance_it, importance_it_ofs);
+    ImportanceOutput(importance_it, importance_it_ofs);
     importance_it_ofs.close();
     
     std::vector<double> importance_lu = ImportanceEigenvectorByLU(data_scc.GetAdjList());
     std::ofstream importance_lu_ofs(output_filename_importance_lu);
-    ImportanceOutput(data_scc, importance_lu, importance_lu_ofs);
+    ImportanceOutput(importance_lu, importance_lu_ofs);
     importance_lu_ofs.close();
 
     std::vector<double> importance_gaussian = ImportanceEigenvectorByGaussian(data_scc.GetAdjList());
     std::ofstream importance_gaussian_ofs(output_filename_importance_gaussian);
-    ImportanceOutput(data_scc, importance_gaussian, importance_gaussian_ofs);
+    ImportanceOutput(importance_gaussian, importance_gaussian_ofs);
     importance_gaussian_ofs.close();
 
     // all pairs shortest path
@@ -118,8 +122,8 @@ int main() {
     Matrix<size_t> apsp_next;
     std::tie(apsp_distance, apsp_next) = AllPairsShortestPaths(data_ori.GetAdjMatrix());
     std::ofstream apsp_distance_ofs(output_filename_apsp_distance), apsp_next_ofs(output_filename_apsp_next);
-    MatrixOutput(apsp_distance, apsp_distance_ofs);
-    MatrixOutput(apsp_next, apsp_next_ofs);
+    MatrixOutput(apsp_distance.cbegin(), apsp_distance.cend(), apsp_distance_ofs);
+    MatrixOutput(apsp_next.cbegin(), apsp_next.cend(), apsp_next_ofs);
     apsp_distance_ofs.close();
     apsp_next_ofs.close();
 
