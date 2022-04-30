@@ -43,7 +43,7 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
     return next;
 }
 
-std::pair<Matrix<unsigned>, Matrix<size_t> > AllPairsShortestPaths(const AdjMatrix& graph) {
+APSPResult AllPairsShortestPaths(const AdjMatrix& graph) {
     // we can assume the graph is valid
 
     size_t n = graph.size();
@@ -54,5 +54,5 @@ std::pair<Matrix<unsigned>, Matrix<size_t> > AllPairsShortestPaths(const AdjMatr
         }
     }
     Matrix<size_t> next = FloydWarshall(distance);
-    return std::make_pair(std::move(distance), std::move(next));
+    return APSPResult(std::move(distance), std::move(next));
 }

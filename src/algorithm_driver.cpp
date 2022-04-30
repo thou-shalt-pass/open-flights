@@ -118,12 +118,10 @@ int main() {
 
     // all pairs shortest path
     
-    Matrix<unsigned> apsp_distance;
-    Matrix<size_t> apsp_next;
-    std::tie(apsp_distance, apsp_next) = AllPairsShortestPaths(data_ori.GetAdjMatrix());
+    APSPResult apsp_result = AllPairsShortestPaths(data_ori.GetAdjMatrix());
     std::ofstream apsp_distance_ofs(output_filename_apsp_distance), apsp_next_ofs(output_filename_apsp_next);
-    MatrixOutput(apsp_distance.cbegin(), apsp_distance.cend(), apsp_distance_ofs);
-    MatrixOutput(apsp_next.cbegin(), apsp_next.cend(), apsp_next_ofs);
+    MatrixOutput(apsp_result.distance.cbegin(), apsp_result.distance.cend(), apsp_distance_ofs);
+    MatrixOutput(apsp_result.next.cbegin(), apsp_result.next.cend(), apsp_next_ofs);
     apsp_distance_ofs.close();
     apsp_next_ofs.close();
 
