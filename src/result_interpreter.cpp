@@ -1,6 +1,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <tuple>
 
 #include "all_pairs_shortest_paths.h"
 #include "data.h"
@@ -78,9 +79,11 @@ int main() {
     importance_lu_ifs.close();
     importance_gaussian_ifs.close();
 
-    std::cout << "Initialization finished\n> ";
+    std::cout << "Initialization finished\n";
 
-    while (std::getline(std::cin, line)) {
+    while (true) {
+        std::cout << "> ";
+        if (!std::getline(std::cin, line)) { break; }
         std::vector<std::string> spl = Split(line, ' ');
         if (spl.size() == 0) {
             continue;
@@ -118,8 +121,53 @@ int main() {
                 std::cout << data_ori.GetNode(path[i]).iata_code << " -> ";
             }
             std::cout << data_ori.GetNode(path[path.size() - 1]).iata_code << '\n';
+        } else if (spl[0] == "top") {
+            if (spl.size() != 2) {
+                std::cout << "Usage: top limit\n";
+                continue;
+            }
+            size_t limit = std::stoul(spl[1]);
+            if (limit > n_scc) {
+                std::cout << "There are only " << n_scc << " airports in the largest strongly connected component\n";
+                continue;
+            }
+            printf("%-5s | %-7s | %-7s | %-7s | %-5s | %-18s | %-20s\n", 
+                "Order", "Iter", "LU", "Gaus", "Code", "City", "Airport Name");
+            for (size_t i = 0; i < limit; ++i) {
+                size_t v = importance_order[i];
+                double importance_it = std::get<1>(importance[v]), 
+                    importance_lu = std::get<2>(importance[v]), 
+                    importance_gaussian = std::get<3>(importance[v]);
+                const Node& node = data_scc.GetNode(v);
+                printf("%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
+                    (size_t)i + 1, importance_it, importance_lu, importance_gaussian, 
+                    node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
+            }
+        } else if (spl[0] == "rank") {
+            if (spl.size() != 2) {
+                std::cout << "Usage: rank code\n";
+                continue;
+            }
+            size_t v;
+            try {
+                v = data_scc.GetIdx(spl[1]);
+            } catch (const std::out_of_range& e) {
+                std::cout << "Invalid IATA code or the airport is not in the largest connected component\n";
+                continue;
+            }
+            size_t rank = std::get<0>(importance[v]);
+            double importance_it = std::get<1>(importance[v]), 
+                importance_lu = std::get<2>(importance[v]), 
+                importance_gaussian = std::get<3>(importance[v]);
+            const Node& node = data_scc.GetNode(v);
+            printf("%-5s | %-7s | %-7s | %-7s | %-5s | %-18s | %-20s\n", 
+                "Order", "Iter", "LU", "Gaus", "Code", "City", "Airport Name");
+            printf("%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
+                rank, importance_it, importance_lu, importance_gaussian, 
+                node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
+        } else {
+            std::cout << "Usage: \n- sp src-code dst-code\n- top limit\n- rank code\n";
         }
-        std::cout << "> ";
     }
 
     return 0;
