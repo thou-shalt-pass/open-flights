@@ -66,7 +66,7 @@ int main() {
     Data data_ori(airport_ori_ifs, airline_ori_ifs);
     airport_ori_ifs.close();
     airline_ori_ifs.close();
-    
+
     // find strongly connect components
 
     std::vector<std::vector<size_t> > scc = StronglyConnectedComponents(data_ori.GetAdjList());

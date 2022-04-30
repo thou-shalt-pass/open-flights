@@ -5,8 +5,44 @@
 
 #include "all_pairs_shortest_paths.h"
 #include "data.h"
+#include "dfs.h"
 
+void RunDFS(const Data& data, const std::string& origin_code, std::ostream& os) {
+    size_t n = data.GetAdjList().size(), v;
 
+    try {
+        v = data.GetIdx(origin_code);
+    } catch (const std::out_of_range& e) {
+        os << "Invalid IATA code\n";
+        return;
+    }
+
+    size_t i = 0;
+    auto look_next_origin = [n, &i, v]() {
+        if (i == n) {
+            return n;
+        }
+        ++i;
+        return (v + i - 1) % n;
+    };
+
+    auto op_before_component = [&os, &data](size_t origin_idx) {
+        os << "New Component where the origin is " << data.GetNode(origin_idx).iata_code << '\n';
+        return origin_idx;
+    };
+
+    auto op_start_visit = [&os, &data](size_t curr_node_idx, size_t component_handle) {
+        const Node& node = data.GetNode(curr_node_idx);
+        os << "Start visiting " << node.iata_code << " (" << node.city << ")" << '\n';
+    };
+
+    auto op_after_visit = [&os, &data](size_t curr_node_idx, size_t component_handle) {
+        const Node& node = data.GetNode(curr_node_idx);
+        os << "Finish visiting " << node.iata_code << " (" << node.city << ")" << '\n';
+    };
+
+    DFS(data.GetAdjList(), look_next_origin, op_before_component, op_start_visit, op_after_visit);
+}
 
 int main() {
     std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
@@ -106,7 +142,13 @@ int main() {
             std::cout << "Bye\n";
             break;
         }
-        if (spl[0] == "scc") {
+        if (spl[0] == "dfs") {
+            if (spl.size() != 2) {
+                std::cout << "Usage: dfs origin-code\n";
+                continue;
+            }
+            RunDFS(data_ori, spl[1], std::cout);
+        } else if (spl[0] == "scc") {
             // find the scc idx of the airport
             if (spl.size() != 2) {
                 std::cout << "Usage: scc code\n";
@@ -194,7 +236,7 @@ int main() {
                 rank, importance_it, importance_lu, importance_gaussian, 
                 node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
         } else {
-            std::cout << "Usage: \n- scc code\n- sp src-code dst-code\n- top limit\n- rank code\n";
+            std::cout << "Usage: \n- dfs origin-code\n- scc code\n- sp src-code dst-code\n- top limit\n- rank code\n";
         }
     }
 

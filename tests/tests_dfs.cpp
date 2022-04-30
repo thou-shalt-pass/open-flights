@@ -28,18 +28,18 @@ void TestDFS(const AdjList& graph, const std::vector<size_t>& look_next_origin_s
         return origin_idx;
     };
 
-    auto op_start_visit = [&expected_op_sequence, &expected_op_sequence_ptr](size_t origin_idx, size_t component_handle) {
+    auto op_start_visit = [&expected_op_sequence, &expected_op_sequence_ptr](size_t curr_node_idx, size_t component_handle) {
         REQUIRE( expected_op_sequence_ptr < expected_op_sequence.size() );
         REQUIRE( std::get<0>(expected_op_sequence[expected_op_sequence_ptr]) == kOpBeforeVisit );
-        REQUIRE( std::get<1>(expected_op_sequence[expected_op_sequence_ptr]) == origin_idx );
+        REQUIRE( std::get<1>(expected_op_sequence[expected_op_sequence_ptr]) == curr_node_idx );
         REQUIRE( std::get<2>(expected_op_sequence[expected_op_sequence_ptr]) == component_handle );
         ++expected_op_sequence_ptr;
     };
 
-    auto op_after_visit = [&expected_op_sequence, &expected_op_sequence_ptr](size_t origin_idx, size_t component_handle) {
+    auto op_after_visit = [&expected_op_sequence, &expected_op_sequence_ptr](size_t curr_node_idx, size_t component_handle) {
         REQUIRE( expected_op_sequence_ptr < expected_op_sequence.size() );
         REQUIRE( std::get<0>(expected_op_sequence[expected_op_sequence_ptr]) == kOpAfterVisit );
-        REQUIRE( std::get<1>(expected_op_sequence[expected_op_sequence_ptr]) == origin_idx );
+        REQUIRE( std::get<1>(expected_op_sequence[expected_op_sequence_ptr]) == curr_node_idx );
         REQUIRE( std::get<2>(expected_op_sequence[expected_op_sequence_ptr]) == component_handle );
         ++expected_op_sequence_ptr;
     };
