@@ -36,6 +36,17 @@
 		},
 		{
 			"type": "shell",
+			"label": "make tests_importance_mutual_actual",
+			"command": "make",
+			"args": [
+				"tests_importance_mutual_actual",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+		{
+			"type": "shell",
 			"label": "make tests_matrix_operation",
 			"command": "make",
 			"args": [

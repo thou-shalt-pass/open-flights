@@ -74,6 +74,30 @@
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {
+            "name": "debug tests_importance_mutual_actual gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/tests_importance_mutual_actual",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "set args ${input:gdb-debugger-args}"
+                }
+            ],
+            "preLaunchTask": "make tests_importance_mutual_actual",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
             "name": "debug tests_matrix_operation gdb",
             "type": "cppdbg",
             "request": "launch",
