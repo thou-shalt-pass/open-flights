@@ -39,14 +39,7 @@ void ImportanceOutput(const Data& data, const std::vector<double>& pagerank_vec,
     for (size_t i = 0; i < n; ++i) {
         double imp = vec_pair[i].first;
         size_t v = vec_pair[i].second;
-        const Node& node = data.GetNode(v);
         os << imp << ',' << v << '\n';
-        // os << imp << ',' << v << ',' << node.iata_code << ',' << node.city << ',' << node.airport_name << ','
-        //     << node.longitude << ',' << node.latitude << '\n';
-        // printf("#%2s: %.10s | %5s | %-20s | %3s\n", "Order", "Importance", "Node Index", "City", "IATA Code");
-        // printf("#%2d: %.10f | %5d | %-20s | %3s\n", 
-        //     (int)i + 1, imp, (int)v, data.GetNode(v).city.c_str(), 
-        //     data.GetNode(v).iata_code.c_str());
     }
 }
 
