@@ -36,4 +36,57 @@ contains all source files
 
 ## Running Instruction
 
+### Main Drivers
 
+The main entry is divided into two part: algorithm_driver and result_interpreter. 
+The reason of that is algorithm_driver will run all algorithms and takes ~82min on EWS 
+since it runs all algorithm and major time spent on Floyd-Warshall. 
+We divide the responsibilities into two part: computational and user interaction. 
+
+#### algorithm_driver 
+
+Run strongly connected components algorithm, three algorithms finding importance of airports, and Floyd-Warshall. 
+Then store raw data in csv and zip into `result.tar.gz` because raw data is very big (~800MB).
+
+- Compile: `make algorithm_driver`
+
+- Run: `./bin/algorithm_driver [airport-dataset-filename] [airline-dataset-filename]` 
+
+(`[airport-dataset-filename]` and `[airline-dataset-filename]` are optional 
+and the default values are `data/airport.csv` and `data/route.csv`)
+
+There are 6072 airports in `data/airport.csv`. 
+To short run time (for the purpose of demo), 
+we can use `./bin/algorithm_driver data/airport_small.csv` 
+where `data/airport_small.csv` only contains first 200 airports in `data/airport.csv`. 
+
+#### result_interpreter 
+
+Read result from algorithm_driver. 
+Interact with users. 
+
+- Compile: `make result_interpreter`
+
+- Run: `./bin/result_interpreter [result-zip-filename]`
+
+(`[result-zip-filename]` is optional 
+and the default value is `result.tar.gz`)
+
+We can run `./bin/result_interpreter expected_result.tar.gz` 
+to interpret the precomputed result from the default dataset (`data/airport.csv` and `data/route.csv`). 
+
+### Test Cases (exclude tests_importance_mutual_actual)
+
+- Compile + Run: `sh run_tests.sh`
+
+### Test Case (only tests_importance_mutual_actual)
+
+- Compile: `make tests_importance_mutual_actual`
+
+- Run: `./bin/tests_importance_mutual_actual`
+
+This will take ~12min on EWS.
+
+The reason of excluding this test case from "tests all" is 
+this test case takes too long 
+since it compares the result of `ImportanceIteration`, `ImportanceEigenvectorByLU` and `ImportanceEigenvectorByGaussian` mutually by inputing the default dataset (`data/airport.csv` and `data/route.csv`).
