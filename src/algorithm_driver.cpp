@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     char buf[128];
 
     // make result directory
-    system("mkdir result");
+    system("mkdir result > /dev/null 2>&1");
     
     // store dataset to result
     const char *airport_data_filename, *airline_data_filename;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     Vector2DOutput(apsp_result.next.cbegin(), apsp_result.next.cend(), kFilenameResultAPSPNext);
 
     // zip result
-    snprintf(buf, sizeof(buf), "tar -zcvf %s result", kFilenameResultPackageDefault);
+    snprintf(buf, sizeof(buf), "tar -zcvf %s result > /dev/null", kFilenameResultPackageDefault);
     system(buf);
     
     return 0;
