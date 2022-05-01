@@ -18,13 +18,13 @@ AdjMatrix EdgeListToAdjMatrix(const std::vector<std::pair<size_t, size_t> >& ver
     return mat_distance;
 }
 
-std::pair< std::vector<double>, std::vector<std::vector<size_t> > > AllPath(const std::pair<Matrix<unsigned>, Matrix<size_t>>& result){
+std::pair< std::vector<double>, std::vector<std::vector<size_t> > > AllPath(const APSPResult& result){
    Matrix<size_t> paths;
    std::vector<double> distance;
-   for (size_t i = 0; i < result.second.size(); ++i) {
-        for (size_t j = i + 1; j < result.second.size(); ++j) {
-            distance.push_back( result.first[i][j]);
-            std::vector<size_t> path = PathReconstruction(result.second, i, j);
+   for (size_t i = 0; i < result.next.size(); ++i) {
+        for (size_t j = i + 1; j < result.next.size(); ++j) {
+            distance.push_back( result.distance[i][j]);
+            std::vector<size_t> path = PathReconstruction(result.next, i, j);
             paths.push_back(path);
         }
    }
@@ -35,11 +35,9 @@ std::pair< std::vector<double>, std::vector<std::vector<size_t> > > AllPath(cons
 TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Small Graph"){
   SECTION("1 Vertex"){
     AdjMatrix adjmatrix = {{5}};
-    std::pair<Matrix<unsigned>, Matrix<size_t> > distance_path = AllPairsShortestPaths(adjmatrix);
-    Matrix<unsigned> distance = distance_path.first;
-    Matrix<size_t> path = distance_path.second;
-    REQUIRE(distance[0][0] == 5);
-    REQUIRE(path[0][0] == 0);
+    APSPResult result = AllPairsShortestPaths(adjmatrix);
+    REQUIRE(result.distance[0][0] == 5);
+    REQUIRE(result.next[0][0] == 0);
   }
 
   SECTION("3 Vertices Graph"){
@@ -121,31 +119,29 @@ TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Normal Graph"){
                                                         {3, 4}, {4, 5}, {3, 5}, {5, 6}, {3, 6} };
     AdjMatrix adjmatrix = EdgeListToAdjMatrix(verticies, weight, 7);
 
-    std::pair< Matrix<unsigned>, Matrix<size_t> > distance_path = AllPairsShortestPaths(adjmatrix);
-    Matrix<unsigned> distance = distance_path.first;
-    Matrix<size_t> path = distance_path.second;
+    APSPResult result = AllPairsShortestPaths(adjmatrix);
 
     std::pair< std::vector<double>, std::vector<std::vector<size_t> > > all_distance_path = AllPath(AllPairsShortestPaths(adjmatrix));
       
     //Vertex0 to Vertex2
-    REQUIRE(distance[0][2] == 1);
-    REQUIRE(PathReconstruction(path,0,2) == std::vector<size_t> {0, 2});
+    REQUIRE(result.distance[0][2] == 1);
+    REQUIRE(PathReconstruction(result.next,0,2) == std::vector<size_t> {0, 2});
 
     //Vertex1 to Vertex6
-    REQUIRE(distance[1][6] == 18);
-    REQUIRE(PathReconstruction(path,1,6) == std::vector<size_t> {1, 4, 5, 6});
+    REQUIRE(result.distance[1][6] == 18);
+    REQUIRE(PathReconstruction(result.next,1,6) == std::vector<size_t> {1, 4, 5, 6});
 
     //Vertex2 to Vertex4
-    REQUIRE(distance[2][4] == 12);
-    REQUIRE(PathReconstruction(path,2,4) == std::vector<size_t> {2, 1, 4});
+    REQUIRE(result.distance[2][4] == 12);
+    REQUIRE(PathReconstruction(result.next,2,4) == std::vector<size_t> {2, 1, 4});
 
     //Vertex4 to Vertex2
-    REQUIRE(distance[4][2] == 12);
-    REQUIRE(PathReconstruction(path,4,2) == std::vector<size_t> {4, 1, 2});
+    REQUIRE(result.distance[4][2] == 12);
+    REQUIRE(PathReconstruction(result.next,4,2) == std::vector<size_t> {4, 1, 2});
 
     //Vertex0 to Vertex6
-    REQUIRE(distance[0][6] == 22);
-    REQUIRE(PathReconstruction(path,0,6) == std::vector<size_t> {0, 2, 3, 5, 6});
+    REQUIRE(result.distance[0][6] == 22);
+    REQUIRE(PathReconstruction(result.next,0,6) == std::vector<size_t> {0, 2, 3, 5, 6});
   }
 
   SECTION("8 Vertices Graph"){
@@ -158,31 +154,29 @@ TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Normal Graph"){
                                                         {3, 7}, {2, 5}, {0,1} };
 
     AdjMatrix adjmatrix = EdgeListToAdjMatrix(verticies, weight, 9);
-    std::pair< Matrix<unsigned>, Matrix<size_t> > distance_path = AllPairsShortestPaths(adjmatrix);
-    Matrix<unsigned> distance = distance_path.first;
-    Matrix<size_t> path = distance_path.second;
+    APSPResult result = AllPairsShortestPaths(adjmatrix);
 
     std::pair< std::vector<double>, std::vector<std::vector<size_t> > > all_distance_path = AllPath(AllPairsShortestPaths(adjmatrix));
       
 
     //Vertex2 to Vertex4
-    REQUIRE(distance[2][4] == 8);
-    REQUIRE(PathReconstruction(path, 2, 4) == std::vector<size_t> {2, 5, 4});
+    REQUIRE(result.distance[2][4] == 8);
+    REQUIRE(PathReconstruction(result.next, 2, 4) == std::vector<size_t> {2, 5, 4});
 
     //Vertex2 to Vertex3
-    REQUIRE(distance[2][3] == 11);
-    REQUIRE(PathReconstruction(path, 2, 3) == std::vector<size_t> {2, 1, 6, 7, 3});
+    REQUIRE(result.distance[2][3] == 11);
+    REQUIRE(PathReconstruction(result.next, 2, 3) == std::vector<size_t> {2, 1, 6, 7, 3});
 
     //Vertex1 to Vertex6
-    REQUIRE(distance[1][6] == 2);
-    REQUIRE(PathReconstruction(path,1,6) == std::vector<size_t> {1, 6});
+    REQUIRE(result.distance[1][6] == 2);
+    REQUIRE(PathReconstruction(result.next,1,6) == std::vector<size_t> {1, 6});
 
     //Vertex4 to Vertex7
-    REQUIRE(distance[4][7] == 6);
-    REQUIRE(PathReconstruction(path,4,7) == std::vector<size_t> {4, 5, 6, 7});
+    REQUIRE(result.distance[4][7] == 6);
+    REQUIRE(PathReconstruction(result.next,4,7) == std::vector<size_t> {4, 5, 6, 7});
 
     //Vertex0 to Vertex7
-    REQUIRE(distance[0][7] == 5);
-    REQUIRE(PathReconstruction(path,0,7) == std::vector<size_t> {0, 1, 6, 7});
+    REQUIRE(result.distance[0][7] == 5);
+    REQUIRE(PathReconstruction(result.next,0,7) == std::vector<size_t> {0, 1, 6, 7});
   }
 }

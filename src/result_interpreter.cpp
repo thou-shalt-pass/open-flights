@@ -7,6 +7,86 @@
 #include "data.h"
 #include "dfs.h"
 
+#include "filename_def.h"
+
+struct SCCResult {
+    std::vector<std::vector<size_t> > collection;
+    std::vector<size_t> node_idx_to_scc_idx;
+};
+
+SCCResult ReadSCCResult(const Data& data, const std::string& scc_result_filename) {
+    size_t n = data.GetAdjList().size();
+    std::ifstream ifs(scc_result_filename);
+    std::vector<std::vector<size_t> > scc_collection;
+    std::vector<size_t> node_to_scc(n, std::numeric_limits<size_t>::max());// maps node to scc
+    size_t scc_counter = 0;
+    std::string line;
+    while (std::getline(ifs, line)) {
+        scc_collection.emplace_back();
+        std::vector<std::string> spl = Split(line, ',');
+        for (const std::string& s : spl) {
+            scc_collection.back().push_back(std::stoul(s));
+            node_to_scc[std::stoul(s)] = scc_counter;
+        }
+        ++scc_counter;
+    }
+    ifs.close();
+    return { scc_collection, node_to_scc };
+}
+
+ImportanceIntegrationResult ReadImportanceResult(const Data& data, const std::string& it_result_filename, 
+        const std::string& lu_result_filename, const std::string& gaussian_result_filename) {
+    size_t n = data.GetAdjList().size();
+    ImportanceIntegrationResult result(n);
+    std::ifstream importance_it_ifs(it_result_filename), 
+        importance_lu_ifs(lu_result_filename), 
+        importance_gaussian_ifs(gaussian_result_filename);
+    std::string line;
+    for (size_t i = 0; i < n; ++i) {
+        // iteration
+        std::getline(importance_it_ifs, line, ',');
+        double importance_it = std::stod(line);
+        std::getline(importance_it_ifs, line, '\n');
+        size_t idx = std::stoul(line);
+        // lu
+        std::getline(importance_lu_ifs, line, ',');
+        double importance_lu = std::stod(line);
+        std::getline(importance_lu_ifs, line, '\n');
+        // gaussian
+        std::getline(importance_gaussian_ifs, line, ',');
+        double importance_gaussian = std::stod(line);
+        std::getline(importance_gaussian_ifs, line, '\n');
+        // store
+        result.Set(i, idx, importance_it, importance_lu, importance_gaussian);
+    }
+    importance_it_ifs.close();
+    importance_lu_ifs.close();
+    importance_gaussian_ifs.close();
+    return result;
+}
+
+APSPResult ReadAPSPResult(size_t n, const std::string& distance_result_filename, 
+        const std::string& next_result_filename) {
+    APSPResult result(n);
+    std::ifstream apsp_distance_ifs(distance_result_filename), apsp_next_ifs(next_result_filename);
+    std::string line;
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n - 1; ++j) {
+            std::getline(apsp_distance_ifs, line, ',');
+            result.distance[i][j] = std::stoul(line);
+            std::getline(apsp_next_ifs, line, ',');
+            result.next[i][j] = std::stoul(line);
+        }
+        std::getline(apsp_distance_ifs, line, '\n');
+        result.distance[i][n - 1] = std::stoul(line);
+        std::getline(apsp_next_ifs, line, '\n');
+        result.next[i][n - 1] = std::stoul(line);
+    }
+    apsp_distance_ifs.close();
+    apsp_next_ifs.close();
+    return result;
+}
+
 void RunDFS(const Data& data, const std::string& origin_code, std::ostream& os) {
     size_t n = data.GetAdjList().size(), v;
 
@@ -31,12 +111,12 @@ void RunDFS(const Data& data, const std::string& origin_code, std::ostream& os) 
         return origin_idx;
     };
 
-    auto op_start_visit = [&os, &data](size_t curr_node_idx, size_t component_handle) {
+    auto op_start_visit = [&os, &data](size_t curr_node_idx, size_t) {
         const Node& node = data.GetNode(curr_node_idx);
         os << "Start visiting " << node.iata_code << " (" << node.city << ")" << '\n';
     };
 
-    auto op_after_visit = [&os, &data](size_t curr_node_idx, size_t component_handle) {
+    auto op_after_visit = [&os, &data](size_t curr_node_idx, size_t) {
         const Node& node = data.GetNode(curr_node_idx);
         os << "Finish visiting " << node.iata_code << " (" << node.city << ")" << '\n';
     };
@@ -44,95 +124,117 @@ void RunDFS(const Data& data, const std::string& origin_code, std::ostream& os) 
     DFS(data.GetAdjList(), look_next_origin, op_before_component, op_start_visit, op_after_visit);
 }
 
-int main() {
-    std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
-        output_filename_scc("result/scc.csv"), 
-        output_filename_airport_largest_scc("result/airport_largest_scc.csv"), 
-        output_filename_airline_largest_scc("result/airline_largest_scc.csv"), 
-        output_filename_importance_it("result/importance_by_iteration.csv"), 
-        output_filename_importance_lu("result/importance_by_lu_decomposition.csv"), 
-        output_filename_importance_gaussian("result/importance_by_gaussian_elimination.csv"), 
-        output_filename_apsp_distance("result/apsp_distance.csv"), 
-        output_filename_apsp_next("result/apsp_next.csv"),
-        output_unzip_cmd("tar -xf result.tar.gz");
-
-    system(output_unzip_cmd.c_str());
-    std::string line;
-
-    std::ifstream airport_ori_ifs(input_filename_airport), airline_ori_ifs(input_filename_airline);
-    Data data_ori(airport_ori_ifs, airline_ori_ifs);
-    airport_ori_ifs.close();
-    airline_ori_ifs.close();
-
-    std::ifstream airport_scc_ifs(output_filename_airport_largest_scc), airline_scc_ifs(output_filename_airline_largest_scc);
-    Data data_scc(airport_scc_ifs, airline_scc_ifs);
-    airport_scc_ifs.close();
-    airline_scc_ifs.close();
-
-    size_t n_ori = data_ori.GetAdjList().size(), n_scc = data_scc.GetAdjList().size();
-
-    std::vector<size_t> node_to_scc(n_ori, std::numeric_limits<size_t>::max());// maps node to scc
-    std::ifstream scc_is(output_filename_scc);
-    size_t scc_counter = 0;
-    while (std::getline(scc_is, line)) {
-        std::vector<std::string> spl = Split(line, ',');
-        for (const std::string& s : spl) {
-            node_to_scc[std::stoul(s)] = scc_counter;
-        }
-        ++scc_counter;
+void InterpretFindSCCIdx(const Data& data, const SCCResult& scc_result, 
+        const std::string& code, std::ostream& os) {
+    size_t v;
+    try {
+        v = data.GetIdx(code);
+    } catch (const std::out_of_range& e) {
+        os << "Invalid IATA code\n";
+        return;
     }
+    os << "The airport is in the strongly connected component " 
+        << scc_result.node_idx_to_scc_idx[v] << '\n';
+}
 
-    // node idx in the order of importance
-    std::vector<size_t> importance_order(n_scc);
-    // node importnace where idx of the array is idx of the node (tuple: [order, it, lu, gaussian])
-    std::vector<std::tuple<size_t, double, double, double> > importance(n_scc);
-    std::ifstream importance_it_ifs(output_filename_importance_it), 
-        importance_lu_ifs(output_filename_importance_lu), 
-        importance_gaussian_ifs(output_filename_importance_gaussian);
-    for (size_t i = 0; i < n_scc; ++i) {
-        // iteration
-        std::getline(importance_it_ifs, line, ',');
-        double importance_it = std::stod(line);
-        std::getline(importance_it_ifs, line, '\n');
-        size_t idx = std::stoul(line);
-        // lu
-        std::getline(importance_lu_ifs, line, ',');
-        double importance_lu = std::stod(line);
-        std::getline(importance_lu_ifs, line, '\n');
-        // gaussian
-        std::getline(importance_gaussian_ifs, line, ',');
-        double importance_gaussian = std::stod(line);
-        std::getline(importance_gaussian_ifs, line, '\n');
-        // store
-        importance_order[i] = idx;
-        importance[idx] = std::make_tuple(i, importance_it, importance_lu, importance_gaussian);
+void InterpretFindShortestPath(const Data& data, const APSPResult& apsp_result, 
+        const std::string& src_code, const std::string& dst_code, std::ostream& os) {
+    size_t src, dst;
+    try {
+        src = data.GetIdx(src_code);
+    } catch (const std::out_of_range& e) {
+        os << "Invalid IATA code for source airport\n";
+        return;
     }
-    importance_it_ifs.close();
-    importance_lu_ifs.close();
-    importance_gaussian_ifs.close();
+    try {
+        dst = data.GetIdx(dst_code);
+    } catch (const std::out_of_range& e) {
+        os << "Invalid IATA code for destination airport\n";
+        return;
+    }
+    if (apsp_result.distance[src][dst] >= kNoAirline) {
+        os << src_code << " and " << dst_code << " are not connected\n";
+        return;
+    }
+    os << "Distance of the shortest path: " << apsp_result.distance[src][dst] << '\n';
+    std::vector<size_t> path = PathReconstruction(apsp_result.next, src, dst);
+    for (size_t i = 0; i < path.size() - 1; ++i) {
+        os << data.GetNode(path[i]).iata_code << " -> ";
+    }
+    os << data.GetNode(path[path.size() - 1]).iata_code << '\n';
+}
 
-    Matrix<unsigned> apsp_distance(n_ori, std::vector<unsigned>(n_ori));
-    Matrix<size_t> apsp_next(n_ori, std::vector<size_t>(n_ori));
-    std::ifstream apsp_distance_ifs(output_filename_apsp_distance), apsp_next_ifs(output_filename_apsp_next);
-    for (size_t i = 0; i < n_ori; ++i) {
-        for (size_t j = 0; j < n_ori - 1; ++j) {
-            std::getline(apsp_distance_ifs, line, ',');
-            apsp_distance[i][j] = std::stoul(line);
-            std::getline(apsp_next_ifs, line, ',');
-            apsp_next[i][j] = std::stoul(line);
-        }
-        std::getline(apsp_distance_ifs, line, '\n');
-        apsp_distance[i][n_ori - 1] = std::stoul(line);
-        std::getline(apsp_next_ifs, line, '\n');
-        apsp_next[i][n_ori - 1] = std::stoul(line);
+void InterpretFindTopImportance(const Data& data_largest_scc, 
+        const ImportanceIntegrationResult& importance_largest_scc, size_t limit, std::ostream& os) {
+    if (limit == 0 || limit > data_largest_scc.GetAdjList().size()) {
+        os << "limit should with in the range [1, " << data_largest_scc.GetAdjList().size() << "]\n";
+        return;
     }
-    apsp_distance_ifs.close();
-    apsp_next_ifs.close();
+    os << "Order | Iter    | LU       | Gaussian | Code  | City               | Airport Name\n";
+    char buf[512];
+    for (size_t i = 0; i < limit; ++i) {
+        size_t v = importance_largest_scc.order_to_idx[i];
+        const Node& node = data_largest_scc.GetNode(v);
+        snprintf(buf, sizeof(buf), "%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
+            i + 1, importance_largest_scc.idx_to_imp_it[v], 
+            importance_largest_scc.idx_to_imp_lu[v], importance_largest_scc.idx_to_imp_gaussian[v], 
+            node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
+        os << buf;
+    }
+}
+
+void InterpretAirportImportance(const Data& data_largest_scc, 
+        const ImportanceIntegrationResult& importance_largest_scc, const std::string& code, std::ostream& os) {
+    size_t v;
+    try {
+        v = data_largest_scc.GetIdx(code);
+    } catch (const std::out_of_range& e) {
+        std::cout << "Invalid IATA code or the airport is not in the largest connected component\n";
+        return;
+    }
+    const Node& node = data_largest_scc.GetNode(v);
+    os << "Order | Iter    | LU       | Gaussian | Code  | City               | Airport Name\n";
+    char buf[512];
+    snprintf(buf, sizeof(buf), "%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
+        importance_largest_scc.idx_to_order[v] + 1, importance_largest_scc.idx_to_imp_it[v], 
+        importance_largest_scc.idx_to_imp_lu[v], importance_largest_scc.idx_to_imp_gaussian[v], 
+        node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
+    os << buf;
+}
+
+int main(int argc, char *argv[]) {
+    int ret;
+    char buf[128];
+
+    // unzip result
+    const char* result_package_filename;
+    if (argc == 1) {
+        result_package_filename = kFilenameResultPackageDefault;
+    } else {
+        result_package_filename = argv[1];
+    }
+    snprintf(buf, sizeof(buf), "tar -xf %s", result_package_filename);
+    ret = system(buf);
+    if (ret != 0) {
+        return ret;
+    }
+    std::cout << "You are using result package: " << result_package_filename << '\n';
+
+    // read data and result; init data structures
+    Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);
+    SCCResult scc_result = ReadSCCResult(data_ori, kFilenameResultSCC);
+    Data data_largest_scc(data_ori, scc_result.collection[0]);
+    ImportanceIntegrationResult importance_largest_scc = ReadImportanceResult(data_largest_scc, 
+        kFilenameResultImportanceIt, kFilenameResultImportanceLU, kFilenameResultImportanceGaussian);
+    APSPResult apsp_result = ReadAPSPResult(data_ori.GetAdjList().size(), 
+        kFilenameResultAPSPDistance, kFilenameResultAPSPNext);
 
     std::cout << "Initialization finished\n";
 
+    // interact with users
     while (true) {
         std::cout << "> ";
+        std::string line;
         if (!std::getline(std::cin, line)) { break; }
         std::vector<std::string> spl = Split(line, ' ');
         if (spl.size() == 0) {
@@ -154,87 +256,33 @@ int main() {
                 std::cout << "Usage: scc code\n";
                 continue;
             }
-            size_t v;
-            try {
-                v = data_ori.GetIdx(spl[1]);
-            } catch (const std::out_of_range& e) {
-                std::cout << "Invalid IATA code\n";
-                continue;
-            }
-            std::cout << "The airport is in the strongly connected component " << node_to_scc[v] << '\n';
+            InterpretFindSCCIdx(data_ori, scc_result, spl[1], std::cout);
         } else if (spl[0] == "sp") {
             // find the shortest path
             if (spl.size() != 3) {
                 std::cout << "Usage: sp src-code dst-code\n";
                 continue;
             }
-            size_t src, dst;
-            try {
-                src = data_ori.GetIdx(spl[1]);
-            } catch (const std::out_of_range& e) {
-                std::cout << "Invalid IATA code for source airport\n";
-                continue;
-            }
-            try {
-                dst = data_ori.GetIdx(spl[2]);
-            } catch (const std::out_of_range& e) {
-                std::cout << "Invalid IATA code for destination airport\n";
-                continue;
-            }
-            if (apsp_distance[src][dst] >= kNoAirline) {
-                std::cout << spl[1] << " and " << spl[2] << " are not connected\n";
-                continue;
-            }
-            std::cout << "Distance of the shortest path: " << apsp_distance[src][dst] << '\n';
-            std::vector<size_t> path = PathReconstruction(apsp_next, src, dst);
-            for (size_t i = 0; i < path.size() - 1; ++i) {
-                std::cout << data_ori.GetNode(path[i]).iata_code << " -> ";
-            }
-            std::cout << data_ori.GetNode(path[path.size() - 1]).iata_code << '\n';
+            InterpretFindShortestPath(data_ori, apsp_result, spl[1], spl[2], std::cout);
         } else if (spl[0] == "top") {
+            // find top importance airports
             if (spl.size() != 2) {
                 std::cout << "Usage: top limit\n";
                 continue;
             }
-            size_t limit = std::stoul(spl[1]);
-            if (limit > n_scc) {
-                std::cout << "There are only " << n_scc << " airports in the largest strongly connected component\n";
+            try {
+                InterpretFindTopImportance(data_largest_scc, importance_largest_scc, std::stoul(spl[1]), std::cout);
+            } catch (const std::invalid_argument& e) {
+                std::cout << "limit should be an integer\n";
                 continue;
             }
-            printf("%-5s | %-7s | %-7s | %-7s | %-5s | %-18s | %-20s\n", 
-                "Order", "Iter", "LU", "Gaus", "Code", "City", "Airport Name");
-            for (size_t i = 0; i < limit; ++i) {
-                size_t v = importance_order[i];
-                double importance_it = std::get<1>(importance[v]), 
-                    importance_lu = std::get<2>(importance[v]), 
-                    importance_gaussian = std::get<3>(importance[v]);
-                const Node& node = data_scc.GetNode(v);
-                printf("%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
-                    (size_t)i + 1, importance_it, importance_lu, importance_gaussian, 
-                    node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
-            }
         } else if (spl[0] == "rank") {
+            // find airport's importance
             if (spl.size() != 2) {
                 std::cout << "Usage: rank code\n";
                 continue;
             }
-            size_t v;
-            try {
-                v = data_scc.GetIdx(spl[1]);
-            } catch (const std::out_of_range& e) {
-                std::cout << "Invalid IATA code or the airport is not in the largest connected component\n";
-                continue;
-            }
-            size_t rank = std::get<0>(importance[v]);
-            double importance_it = std::get<1>(importance[v]), 
-                importance_lu = std::get<2>(importance[v]), 
-                importance_gaussian = std::get<3>(importance[v]);
-            const Node& node = data_scc.GetNode(v);
-            printf("%-5s | %-7s | %-7s | %-7s | %-5s | %-18s | %-20s\n", 
-                "Order", "Iter", "LU", "Gaus", "Code", "City", "Airport Name");
-            printf("%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
-                rank, importance_it, importance_lu, importance_gaussian, 
-                node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
+            InterpretAirportImportance(data_largest_scc, importance_largest_scc, spl[1], std::cout);
         } else {
             std::cout << "Usage: \n- dfs origin-code\n- scc code\n- sp src-code dst-code\n- top limit\n- rank code\n";
         }
