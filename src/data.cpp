@@ -184,7 +184,7 @@ void FilterAirports(const std::string& out_filename, const std::string& in_filen
     std::ifstream ifs(in_filename);
     std::ofstream ofs(out_filename);
 
-    FilterAirports(out_filename, in_filename, allowed_codes);
+    FilterAirports(ofs, ifs, allowed_codes);
 
     ifs.close();
     ofs.close();
@@ -195,7 +195,7 @@ void FilterAirlines(const std::string& out_filename, const std::string& in_filen
     std::ifstream ifs(in_filename);
     std::ofstream ofs(out_filename);
 
-    FilterAirlines(out_filename, in_filename, allowed_codes);
+    FilterAirlines(ofs, ifs, allowed_codes);
 
     ifs.close();
     ofs.close();
