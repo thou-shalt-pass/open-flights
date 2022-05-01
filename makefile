@@ -2,6 +2,10 @@ CXX=clang++
 INCLUDES=-Iincludes/
 CXXFLAGS=-std=c++14 -g -fstandalone-debug -Wall -Wextra -pedantic $(INCLUDES)
 
+all: main tests
+tests: tests_importance tests_importance_mutual_actual tests_matrix_operation tests_strongly_connected_components tests_strongly_connected_components tests_all_pairs_shortest_paths tests_dfs
+main: algorithm_driver result_interpreter
+
 algorithm_driver: bin/algorithm_driver
 result_interpreter: bin/result_interpreter
 tests_importance: bin/tests_importance
@@ -79,7 +83,7 @@ reserve_obj/catch.o: tests/catch.cpp
 
 .DEFAULT_GOAL := algorithm_driver
 
-.PHONY: clean algorithm_driver result_interpreter tests_importance tests_importance_mutual_actual tests_matrix_operation tests_strongly_connected_components tests_dfs tests_all_pairs_shortest_paths
+.PHONY: clean all algorithm_driver result_interpreter tests_importance tests_importance_mutual_actual tests_matrix_operation tests_strongly_connected_components tests_dfs tests_all_pairs_shortest_paths
 
 clean:
 	rm -rf ./bin/* ./obj/*
