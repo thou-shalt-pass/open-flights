@@ -7,29 +7,40 @@
 #include "data.h"
 #include "dfs.h"
 
-Data ReadData(const std::string& airport_filename, const std::string& airline_filename) {
-    std::ifstream airport_ifs(airport_filename), airline_ifs(airline_filename);
-    Data data(airport_ifs, airline_ifs);
-    airport_ifs.close();
-    airline_ifs.close();
-    return data;
-}
+constexpr char kFilenameDataAirport[] = "data/airport_ori.csv";
+constexpr char kFilenameDataAirportSmall[] = "data/airport_ori_small.csv";
+constexpr char kFilenameDataAirline[] = "data/route_ori.csv";
+constexpr char kFilenameResultSCC[] = "result/scc.csv";
+constexpr char kFilenameResultImportanceIt[] = "result/importance_by_iteration.csv";
+constexpr char kFilenameResultImportanceLU[] = "result/importance_by_lu_decomposition.csv";
+constexpr char kFilenameResultImportanceGaussian[] = "result/importance_by_gaussian_elimination.csv";
+constexpr char kFilenameResultAPSPDistance[] = "result/apsp_distance.csv";
+constexpr char kFilenameResultAPSPNext[] = "result/apsp_next.csv";
+constexpr char kCmdUnzipResult[] = "tar -xf result.tar.gz";
 
-std::vector<size_t> ReadSCCResult(const Data& data, const std::string& scc_result_filename) {
+struct SCCResult {
+    std::vector<std::vector<size_t> > collection;
+    std::vector<size_t> node_idx_to_scc_idx;
+};
+
+SCCResult ReadSCCResult(const Data& data, const std::string& scc_result_filename) {
     size_t n = data.GetAdjList().size();
     std::ifstream ifs(scc_result_filename);
+    std::vector<std::vector<size_t> > scc_collection;
     std::vector<size_t> node_to_scc(n, std::numeric_limits<size_t>::max());// maps node to scc
     size_t scc_counter = 0;
     std::string line;
     while (std::getline(ifs, line)) {
+        scc_collection.emplace_back();
         std::vector<std::string> spl = Split(line, ',');
         for (const std::string& s : spl) {
+            scc_collection.back().push_back(std::stoul(s));
             node_to_scc[std::stoul(s)] = scc_counter;
         }
         ++scc_counter;
     }
     ifs.close();
-    return node_to_scc;
+    return { scc_collection, node_to_scc };
 }
 
 ImportanceIntegrationResult ReadImportanceResult(const Data& data, const std::string& it_result_filename, 
@@ -122,7 +133,7 @@ void RunDFS(const Data& data, const std::string& origin_code, std::ostream& os) 
     DFS(data.GetAdjList(), look_next_origin, op_before_component, op_start_visit, op_after_visit);
 }
 
-void InterpretFindSCCIdx(const Data& data, const std::vector<size_t>& node_to_scc, 
+void InterpretFindSCCIdx(const Data& data, const SCCResult& scc_result, 
         const std::string& code, std::ostream& os) {
     size_t v;
     try {
@@ -131,7 +142,8 @@ void InterpretFindSCCIdx(const Data& data, const std::vector<size_t>& node_to_sc
         os << "Invalid IATA code\n";
         return;
     }
-    os << "The airport is in the strongly connected component " << node_to_scc[v] << '\n';
+    os << "The airport is in the strongly connected component " 
+        << scc_result.node_idx_to_scc_idx[v] << '\n';
 }
 
 void InterpretFindShortestPath(const Data& data, const APSPResult& apsp_result, 
@@ -193,33 +205,31 @@ void InterpretAirportImportance(const Data& data_largest_scc,
     os << "Order | Iter    | LU       | Gaussian | Code  | City               | Airport Name\n";
     char buf[512];
     snprintf(buf, sizeof(buf), "%5lu | %.5f | %.5f | %.5f | %-5s | %-18s | %-20s\n", 
-        importance_largest_scc.idx_to_order[v], importance_largest_scc.idx_to_imp_it[v], 
+        importance_largest_scc.idx_to_order[v] + 1, importance_largest_scc.idx_to_imp_it[v], 
         importance_largest_scc.idx_to_imp_lu[v], importance_largest_scc.idx_to_imp_gaussian[v], 
         node.iata_code.c_str(), node.city.c_str(), node.airport_name.c_str());
     os << buf;
 }
 
-int main() {
-    std::string input_filename_airport("data/airport_ori.csv"), input_filename_airline("data/route_ori.csv"), 
-        output_filename_scc("result/scc.csv"), 
-        output_filename_airport_largest_scc("result/airport_largest_scc.csv"), 
-        output_filename_airline_largest_scc("result/airline_largest_scc.csv"), 
-        output_filename_importance_it("result/importance_by_iteration.csv"), 
-        output_filename_importance_lu("result/importance_by_lu_decomposition.csv"), 
-        output_filename_importance_gaussian("result/importance_by_gaussian_elimination.csv"), 
-        output_filename_apsp_distance("result/apsp_distance.csv"), 
-        output_filename_apsp_next("result/apsp_next.csv"),
-        output_unzip_cmd("tar -xf result.tar.gz");
-
+int main(int argc, char *argv[]) {
     // unzip result
-    system(output_unzip_cmd.c_str());
+    system(kCmdUnzipResult);
 
-    // read data and result; init data structures
-    Data data_ori = ReadData(input_filename_airport, input_filename_airline);
-    std::vector<size_t> node_to_scc = ReadSCCResult(data_ori, output_filename_scc);// maps node to scc
-    Data data_largest_scc = ReadData(output_filename_airport_largest_scc, output_filename_airline_largest_scc);
-    ImportanceIntegrationResult importance_largest_scc = ReadImportanceResult(data_largest_scc, output_filename_importance_it, output_filename_importance_lu, output_filename_importance_gaussian);
-    APSPResult apsp_result = ReadAPSPResult(data_ori.GetAdjList().size(), output_filename_apsp_distance, output_filename_apsp_next);
+    // read data
+    const char* filename_data_airport = kFilenameDataAirport;
+    if (argc >= 2 && *argv[1] == 's') {
+        std::cout << "You are using the small dataset\n";
+        filename_data_airport = kFilenameDataAirportSmall;
+    }
+    Data data_ori = ReadData(filename_data_airport, kFilenameDataAirline);
+
+    // read result; init data structures
+    SCCResult scc_result = ReadSCCResult(data_ori, kFilenameResultSCC);
+    Data data_largest_scc(data_ori, scc_result.collection[0]);
+    ImportanceIntegrationResult importance_largest_scc = ReadImportanceResult(data_largest_scc, 
+        kFilenameResultImportanceIt, kFilenameResultImportanceLU, kFilenameResultImportanceGaussian);
+    APSPResult apsp_result = ReadAPSPResult(data_ori.GetAdjList().size(), 
+        kFilenameResultAPSPDistance, kFilenameResultAPSPNext);
 
     std::cout << "Initialization finished\n";
 
@@ -248,7 +258,7 @@ int main() {
                 std::cout << "Usage: scc code\n";
                 continue;
             }
-            InterpretFindSCCIdx(data_ori, node_to_scc, spl[1], std::cout);
+            InterpretFindSCCIdx(data_ori, scc_result, spl[1], std::cout);
         } else if (spl[0] == "sp") {
             // find the shortest path
             if (spl.size() != 3) {
