@@ -50,7 +50,7 @@ contains all source files
 
 The main entry is divided into two part: algorithm_driver and result_interpreter. 
 The reason of that is algorithm_driver will run all algorithms and takes ~82min on EWS 
-since it runs all algorithm and major time spent on Floyd-Warshall. 
+since it runs all algorithm and major time spent on Floyd-Warshall (~70min). 
 We divide the responsibilities into two part: computational and user interaction. 
 
 #### algorithm_driver 
