@@ -29,14 +29,12 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
     for (size_t k = 0; k < n; ++k) {
         for (size_t i = 0; i < n; ++i) {
             for (size_t j = 0; j < n; ++j) {
-                // if (distance[i][k] != kNoAirline && distance[k][j] != kNoAirline) {
                 // By the definition of kNoAirline, this addition operation will not cause an overflow
                 unsigned new_distance = distance[i][k] + distance[k][j];
                 if (new_distance < distance[i][j]){
                     distance[i][j] = new_distance;
                     next[i][j] = next[i][k];
                 }
-                // }
             }
         }
     }
@@ -44,13 +42,15 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
 }
 
 APSPResult AllPairsShortestPaths(const AdjMatrix& graph) {
-    // we can assume the graph is valid
-
     size_t n = graph.size();
     Matrix<unsigned> distance(n, std::vector<unsigned>(n));
     for(size_t i = 0; i < n; ++i){
         for (size_t j = 0; j < n; j++) {
-            distance[i][j] = graph[i][j].distance;
+            if (i == j) {
+                distance[i][j] = 0;
+            } else {
+                distance[i][j] = graph[i][j].distance;
+            }
         }
     }
     Matrix<size_t> next = FloydWarshall(distance);
