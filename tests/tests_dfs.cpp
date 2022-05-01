@@ -61,20 +61,20 @@ TEST_CASE("DFS CLRS", "[dfs]") {
     };
     std::vector<size_t> look_next_origin_sequence { 0, 1, 2, 3, 4, 5 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 
-        { kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 0, 0 }, 
-        { kOpBeforeVisit, 1, 0 }, 
-        { kOpBeforeVisit, 4, 0 }, 
-        { kOpBeforeVisit, 3, 0 }, 
-        { kOpAfterVisit, 3, 0 }, 
-        { kOpAfterVisit, 4, 0 }, 
-        { kOpAfterVisit, 1, 0 }, 
-        { kOpAfterVisit, 0, 0 }, 
-        { kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 2, 2 }, 
-        { kOpBeforeVisit, 5, 2 }, 
-        { kOpAfterVisit, 5, 2 }, 
-        { kOpAfterVisit, 2, 2 }, 
+        std::make_tuple( kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 0, 0 ), 
+        std::make_tuple( kOpBeforeVisit, 1, 0 ), 
+        std::make_tuple( kOpBeforeVisit, 4, 0 ), 
+        std::make_tuple( kOpBeforeVisit, 3, 0 ), 
+        std::make_tuple( kOpAfterVisit, 3, 0 ), 
+        std::make_tuple( kOpAfterVisit, 4, 0 ), 
+        std::make_tuple( kOpAfterVisit, 1, 0 ), 
+        std::make_tuple( kOpAfterVisit, 0, 0 ), 
+        std::make_tuple( kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 2, 2 ), 
+        std::make_tuple( kOpBeforeVisit, 5, 2 ), 
+        std::make_tuple( kOpAfterVisit, 5, 2 ), 
+        std::make_tuple( kOpAfterVisit, 2, 2 ), 
     };
     TestDFS(graph, look_next_origin_sequence, expected_op_sequence);
 }
@@ -95,18 +95,18 @@ TEST_CASE("DFS all self-loop", "[dfs]") {
     };
     std::vector<size_t> look_next_origin_sequence { 3, 2, 1, 0 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 
-        { kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 3, 3 }, 
-        { kOpAfterVisit, 3, 3 }, 
-        { kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 2, 2 }, 
-        { kOpAfterVisit, 2, 2 }, 
-        { kOpBeforeComponent, 1, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 1, 1 }, 
-        { kOpAfterVisit, 1, 1 }, 
-        { kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 0, 0 }, 
-        { kOpAfterVisit, 0, 0 }, 
+        std::make_tuple( kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 3, 3 ), 
+        std::make_tuple( kOpAfterVisit, 3, 3 ), 
+        std::make_tuple( kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 2, 2 ), 
+        std::make_tuple( kOpAfterVisit, 2, 2 ), 
+        std::make_tuple( kOpBeforeComponent, 1, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 1, 1 ), 
+        std::make_tuple( kOpAfterVisit, 1, 1 ), 
+        std::make_tuple( kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 0, 0 ), 
+        std::make_tuple( kOpAfterVisit, 0, 0 ), 
     };
     TestDFS(graph, look_next_origin_sequence, expected_op_sequence);
 }
@@ -120,18 +120,18 @@ TEST_CASE("DFS all disconnected", "[dfs]") {
     };
     std::vector<size_t> look_next_origin_sequence { 3, 2, 1, 0 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 
-        { kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 3, 3 }, 
-        { kOpAfterVisit, 3, 3 }, 
-        { kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 2, 2 }, 
-        { kOpAfterVisit, 2, 2 }, 
-        { kOpBeforeComponent, 1, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 1, 1 }, 
-        { kOpAfterVisit, 1, 1 }, 
-        { kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 0, 0 }, 
-        { kOpAfterVisit, 0, 0 }, 
+        std::make_tuple( kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 3, 3 ), 
+        std::make_tuple( kOpAfterVisit, 3, 3 ), 
+        std::make_tuple( kOpBeforeComponent, 2, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 2, 2 ), 
+        std::make_tuple( kOpAfterVisit, 2, 2 ), 
+        std::make_tuple( kOpBeforeComponent, 1, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 1, 1 ), 
+        std::make_tuple( kOpAfterVisit, 1, 1 ), 
+        std::make_tuple( kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 0, 0 ), 
+        std::make_tuple( kOpAfterVisit, 0, 0 ), 
     };
     TestDFS(graph, look_next_origin_sequence, expected_op_sequence);
 }
@@ -149,25 +149,25 @@ TEST_CASE("all connected but not strongly connected", "[dfs]") {
     };
     std::vector<size_t> look_next_origin_sequence { 5, 6, 7, 0, 1, 3, 2, 4 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 
-        { kOpBeforeComponent, 5, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 5, 5 }, 
-        { kOpBeforeVisit, 6, 5 }, 
-        { kOpAfterVisit, 6, 5 }, 
-        { kOpAfterVisit, 5, 5 }, 
-        { kOpBeforeComponent, 7, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 7, 7 }, 
-        { kOpBeforeVisit, 3, 7 }, 
-        { kOpBeforeVisit, 2, 7 }, 
-        { kOpAfterVisit, 2, 7 }, 
-        { kOpAfterVisit, 3, 7 }, 
-        { kOpAfterVisit, 7, 7 }, 
-        { kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 0, 0 }, 
-        { kOpBeforeVisit, 1, 0 }, 
-        { kOpBeforeVisit, 4, 0 }, 
-        { kOpAfterVisit, 4, 0 }, 
-        { kOpAfterVisit, 1, 0 }, 
-        { kOpAfterVisit, 0, 0 }, 
+        std::make_tuple( kOpBeforeComponent, 5, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 5, 5 ), 
+        std::make_tuple( kOpBeforeVisit, 6, 5 ), 
+        std::make_tuple( kOpAfterVisit, 6, 5 ), 
+        std::make_tuple( kOpAfterVisit, 5, 5 ), 
+        std::make_tuple( kOpBeforeComponent, 7, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 7, 7 ), 
+        std::make_tuple( kOpBeforeVisit, 3, 7 ), 
+        std::make_tuple( kOpBeforeVisit, 2, 7 ), 
+        std::make_tuple( kOpAfterVisit, 2, 7 ), 
+        std::make_tuple( kOpAfterVisit, 3, 7 ), 
+        std::make_tuple( kOpAfterVisit, 7, 7 ), 
+        std::make_tuple( kOpBeforeComponent, 0, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 0, 0 ), 
+        std::make_tuple( kOpBeforeVisit, 1, 0 ), 
+        std::make_tuple( kOpBeforeVisit, 4, 0 ), 
+        std::make_tuple( kOpAfterVisit, 4, 0 ), 
+        std::make_tuple( kOpAfterVisit, 1, 0 ), 
+        std::make_tuple( kOpAfterVisit, 0, 0 ), 
     };
     TestDFS(graph, look_next_origin_sequence, expected_op_sequence);
 }
@@ -181,15 +181,15 @@ TEST_CASE("single strongly connected component", "[dfs]") {
     };
     std::vector<size_t> look_next_origin_sequence { 3, 2, 1, 0 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 
-        { kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() }, 
-        { kOpBeforeVisit, 3, 3 }, 
-        { kOpBeforeVisit, 0, 3 }, 
-        { kOpBeforeVisit, 1, 3 }, 
-        { kOpBeforeVisit, 2, 3 }, 
-        { kOpAfterVisit, 2, 3 }, 
-        { kOpAfterVisit, 1, 3 }, 
-        { kOpAfterVisit, 0, 3 }, 
-        { kOpAfterVisit, 3, 3 }, 
+        std::make_tuple( kOpBeforeComponent, 3, std::numeric_limits<size_t>::max() ), 
+        std::make_tuple( kOpBeforeVisit, 3, 3 ), 
+        std::make_tuple( kOpBeforeVisit, 0, 3 ), 
+        std::make_tuple( kOpBeforeVisit, 1, 3 ), 
+        std::make_tuple( kOpBeforeVisit, 2, 3 ), 
+        std::make_tuple( kOpAfterVisit, 2, 3 ), 
+        std::make_tuple( kOpAfterVisit, 1, 3 ), 
+        std::make_tuple( kOpAfterVisit, 0, 3 ), 
+        std::make_tuple( kOpAfterVisit, 3, 3 ), 
     };
     TestDFS(graph, look_next_origin_sequence, expected_op_sequence);
 }
