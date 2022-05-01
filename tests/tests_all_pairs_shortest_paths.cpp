@@ -36,7 +36,7 @@ TEST_CASE("all_pairs_shortest_paths(const adjMatrix& graph) Small Graph"){
   SECTION("1 Vertex"){
     AdjMatrix adjmatrix = {{5}};
     APSPResult result = AllPairsShortestPaths(adjmatrix);
-    REQUIRE(result.distance[0][0] == 5);
+    REQUIRE(result.distance[0][0] == 0);
     REQUIRE(result.next[0][0] == 0);
   }
 
