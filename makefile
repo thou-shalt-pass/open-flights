@@ -24,7 +24,7 @@ bin/result_interpreter: ./obj/data.o ./obj/result_interpreter.o ./obj/all_pairs_
 bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/data.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_importance_mutual_actual: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance_mutual_actual.o ./obj/importance.o ./obj/data.o
+bin/tests_importance_mutual_actual: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance_mutual_actual.o ./obj/importance.o ./obj/data.o ./obj/strongly_connected_components.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_matrix_operation.o
