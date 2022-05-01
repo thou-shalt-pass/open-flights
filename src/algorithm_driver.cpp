@@ -10,17 +10,7 @@
 #include "importance.h"
 #include "strongly_connected_components.h"
 
-constexpr char kFilenameDataAirport[] = "data/airport_ori.csv";
-constexpr char kFilenameDataAirportSmall[] = "data/airport_ori_small.csv";
-constexpr char kFilenameDataAirline[] = "data/route_ori.csv";
-constexpr char kFilenameResultSCC[] = "result/scc.csv";
-constexpr char kFilenameResultImportanceIt[] = "result/importance_by_iteration.csv";
-constexpr char kFilenameResultImportanceLU[] = "result/importance_by_lu_decomposition.csv";
-constexpr char kFilenameResultImportanceGaussian[] = "result/importance_by_gaussian_elimination.csv";
-constexpr char kFilenameResultAPSPDistance[] = "result/apsp_distance.csv";
-constexpr char kFilenameResultAPSPNext[] = "result/apsp_next.csv";
-constexpr char kCmdMkDirResult[] = "mkdir result";
-constexpr char kCmdZipResult[] = "tar -zcvf result.tar.gz result";
+#include "filename_def.h"
 
 template <typename InputIt>
 void VectorOutput(InputIt begin, InputIt end, std::ostream& os) {
@@ -80,16 +70,38 @@ void WriteImportanceResult(const std::vector<double>& pagerank_vec,
 }
 
 int main(int argc, char *argv[]) {
+    int ret;
+    char buf[128];
+
     // make result directory
-    system(kCmdMkDirResult);
+    system("mkdir result");
     
-    // read data
-    const char* filename_data_airport = kFilenameDataAirport;
-    if (argc >= 2 && *argv[1] == 's') {
-        std::cout << "You are using the small dataset\n";
-        filename_data_airport = kFilenameDataAirportSmall;
+    // store dataset to result
+    const char *airport_data_filename, *airline_data_filename;
+    if (argc == 1) {
+        airport_data_filename = kFilenameInputDataAirportDefault;
+        airline_data_filename = kFilenameInputDataAirlineDefault;
+    } else if (argc == 2) {
+        airport_data_filename = argv[1];
+        airline_data_filename = kFilenameInputDataAirlineDefault;
+    } else {
+        airport_data_filename = argv[1];
+        airline_data_filename = argv[2];
     }
-    Data data_ori = ReadData(filename_data_airport, kFilenameDataAirline);
+    snprintf(buf, sizeof(buf), "cp %s %s", airport_data_filename, kFilenameResultInputDataAirport);
+    ret = system(buf);
+    if (ret != 0) {
+        return ret;
+    }
+    snprintf(buf, sizeof(buf), "cp %s %s", airline_data_filename, kFilenameResultInputDataAirline);
+    ret = system(buf);
+    if (ret != 0) {
+        return ret;
+    }
+    std::cout << "You are using airport and airline dataset: " << airport_data_filename << ", " << airline_data_filename << '\n';
+
+    // read data
+    Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);
 
     // find strongly connect components
     std::vector<std::vector<size_t> > scc_collection = StronglyConnectedComponents(data_ori.GetAdjList());
@@ -113,7 +125,8 @@ int main(int argc, char *argv[]) {
     Vector2DOutput(apsp_result.next.cbegin(), apsp_result.next.cend(), kFilenameResultAPSPNext);
 
     // zip result
-    system(kCmdZipResult);
+    snprintf(buf, sizeof(buf), "tar -zcvf %s result", kFilenameResultPackageDefault);
+    system(buf);
     
     return 0;
 }

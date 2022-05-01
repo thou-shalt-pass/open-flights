@@ -7,16 +7,7 @@
 #include "data.h"
 #include "dfs.h"
 
-constexpr char kFilenameDataAirport[] = "data/airport_ori.csv";
-constexpr char kFilenameDataAirportSmall[] = "data/airport_ori_small.csv";
-constexpr char kFilenameDataAirline[] = "data/route_ori.csv";
-constexpr char kFilenameResultSCC[] = "result/scc.csv";
-constexpr char kFilenameResultImportanceIt[] = "result/importance_by_iteration.csv";
-constexpr char kFilenameResultImportanceLU[] = "result/importance_by_lu_decomposition.csv";
-constexpr char kFilenameResultImportanceGaussian[] = "result/importance_by_gaussian_elimination.csv";
-constexpr char kFilenameResultAPSPDistance[] = "result/apsp_distance.csv";
-constexpr char kFilenameResultAPSPNext[] = "result/apsp_next.csv";
-constexpr char kCmdUnzipResult[] = "tar -xf result.tar.gz";
+#include "filename_def.h"
 
 struct SCCResult {
     std::vector<std::vector<size_t> > collection;
@@ -212,18 +203,25 @@ void InterpretAirportImportance(const Data& data_largest_scc,
 }
 
 int main(int argc, char *argv[]) {
+    int ret;
+    char buf[128];
+
     // unzip result
-    system(kCmdUnzipResult);
-
-    // read data
-    const char* filename_data_airport = kFilenameDataAirport;
-    if (argc >= 2 && *argv[1] == 's') {
-        std::cout << "You are using the small dataset\n";
-        filename_data_airport = kFilenameDataAirportSmall;
+    const char* result_package_filename;
+    if (argc == 1) {
+        result_package_filename = kFilenameResultPackageDefault;
+    } else {
+        result_package_filename = argv[1];
     }
-    Data data_ori = ReadData(filename_data_airport, kFilenameDataAirline);
+    snprintf(buf, sizeof(buf), "tar -xf %s", result_package_filename);
+    ret = system(buf);
+    if (ret != 0) {
+        return ret;
+    }
+    std::cout << "You are using result package: " << result_package_filename << '\n';
 
-    // read result; init data structures
+    // read data and result; init data structures
+    Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);
     SCCResult scc_result = ReadSCCResult(data_ori, kFilenameResultSCC);
     Data data_largest_scc(data_ori, scc_result.collection[0]);
     ImportanceIntegrationResult importance_largest_scc = ReadImportanceResult(data_largest_scc, 
