@@ -37,6 +37,13 @@ struct Node{
 using AdjList = std::vector<std::list<size_t> >;
 using AdjMatrix = Matrix<Edge>;
 
+struct SCCResult {
+    // collection of sets (should in the order of decreasing size of sets)
+    std::vector<std::vector<size_t> > collection;
+    // maps node idx to scc idx
+    std::vector<size_t> node_idx_to_scc_idx;
+};
+
 struct ImportanceIntegrationResult {
     std::vector<size_t> order_to_idx;// order -> node_idx
     std::vector<size_t> idx_to_order;// node_idx -> order
