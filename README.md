@@ -60,9 +60,9 @@ Then store raw data in csv and zip into `result.tar.gz` because raw data is very
 
 - Compile: `make algorithm_driver`
 
-- Run: `./bin/algorithm_driver [airport-dataset-filename] [airline-dataset-filename]` 
+- Run: `./bin/algorithm_driver <airport-dataset-filename> <airline-dataset-filename>` 
 
-(`[airport-dataset-filename]` and `[airline-dataset-filename]` are optional 
+(`<airport-dataset-filename>` and `<airline-dataset-filename>` are optional 
 and the default values are `data/airport.csv` and `data/route.csv`)
 
 There are 6072 airports in `data/airport.csv`. 
@@ -77,13 +77,21 @@ Interact with users.
 
 - Compile: `make result_interpreter`
 
-- Run: `./bin/result_interpreter [result-zip-filename]`
+- Run: `./bin/result_interpreter <result-zip-filename>`
 
-(`[result-zip-filename]` is optional 
+(`<result-zip-filename>` is optional 
 and the default value is `result.tar.gz`)
 
 We can run `./bin/result_interpreter expected_result.tar.gz` 
 to interpret the precomputed result from the default dataset (`data/airport.csv` and `data/route.csv`). 
+
+The result_interpreter provides 5 interactive command
+
+- `dfs <origin-iata-code>`: run DFS with the specific origin airport `<origin-iata-code>`
+- `scc <iata-code>`: find the index (unique identifier) of the strongly connected component contains airport `<iata-code>`
+- `sp <departure-iata-code> <destination-iata-code>`: find the shortest path from the airport `<departure-iata-code>` to the airport `<destination-iata-code>`
+- `top <limit-number>`: find the `<limit-number>` most important airports
+- `rank <iata-code>`: find importance of the airport `<iata-code>`
 
 ### Test Cases (exclude tests_importance_mutual_actual)
 
