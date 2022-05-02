@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <numeric>
-#include <queue>
 #include <vector>
 
 #include "all_pairs_shortest_paths.h"
@@ -12,6 +11,14 @@
 
 #include "filename_def.h"
 
+/**
+ * @brief output a vector in csv format to ostream
+ * 
+ * @tparam InputIt iterator
+ * @param begin begin const iterator
+ * @param end end const iterator
+ * @param os ostream
+ */
 template <typename InputIt>
 void VectorOutput(InputIt begin, InputIt end, std::ostream& os) {
     if (begin == end) { return; }
@@ -24,6 +31,14 @@ void VectorOutput(InputIt begin, InputIt end, std::ostream& os) {
     os << '\n';
 }
 
+/**
+ * @brief output a 2d vector in csv format to ostream
+ * 
+ * @tparam InputIt iterator
+ * @param begin begin const iterator
+ * @param end end const iterator
+ * @param os ostream
+ */
 template <typename InputIt>
 void Vector2DOutput(InputIt begin, InputIt end, std::ostream& os) {
     while (begin != end) {
@@ -32,6 +47,14 @@ void Vector2DOutput(InputIt begin, InputIt end, std::ostream& os) {
     }
 }
 
+/**
+ * @brief write a 2d vector in csv format to file
+ * 
+ * @tparam InputIt iterator
+ * @param begin begin const iterator
+ * @param end end const iterator
+ * @param result_filename output target filename
+ */
 template <typename InputIt>
 void Vector2DOutput(InputIt begin, InputIt end, const std::string& result_filename) {
     std::ofstream ofs(result_filename);
@@ -39,6 +62,12 @@ void Vector2DOutput(InputIt begin, InputIt end, const std::string& result_filena
     ofs.close();
 }
 
+/**
+ * @brief write scc algorithm result to file
+ * 
+ * @param scc_collection collection of sets (should in the order of decreasing size of sets)
+ * @param scc_result_filename output target filename
+ */
 void WriteSCCResult(const std::vector<std::vector<size_t> >& scc_collection, 
         const std::string& scc_result_filename) {
     std::ofstream ofs(scc_result_filename);
@@ -46,6 +75,12 @@ void WriteSCCResult(const std::vector<std::vector<size_t> >& scc_collection,
     ofs.close();
 }
 
+/**
+ * @brief output one of the importance algorithms result to ostream
+ * 
+ * @param pagerank_vec pagerank vector (should in the order of node idx; i.e. maps node idx to rank)
+ * @param os ostream
+ */
 void ImportanceOutput(const std::vector<double>& pagerank_vec, std::ostream& os) {
     size_t n = pagerank_vec.size();
     std::vector<std::pair<double, size_t> > vec_pair;// [importance, idx]
@@ -62,6 +97,12 @@ void ImportanceOutput(const std::vector<double>& pagerank_vec, std::ostream& os)
     }
 }
 
+/**
+ * @brief write one of the importance algorithms result to file
+ * 
+ * @param pagerank_vec pagerank vector (should in the order of node idx; i.e. maps node idx to rank)
+ * @param importance_result_filename output target filename
+ */
 void WriteImportanceResult(const std::vector<double>& pagerank_vec, 
         const std::string& importance_result_filename) {
     std::ofstream ofs(importance_result_filename);
@@ -73,6 +114,7 @@ int main(int argc, char *argv[]) {
     int ret;
     char buf[128];
 
+    // team info
     std::cout << "---------------------------------------\n";
     std::cout << " CS 225 Final Project: OpenFlights\n";
     std::cout << " Team Members: tluo9-yanzhen4-yirongc3\n";
@@ -82,7 +124,7 @@ int main(int argc, char *argv[]) {
     // make result directory
     system("mkdir result > /dev/null 2>&1");
     
-    // store dataset to result
+    // copy dataset to result
     const char *airport_data_filename, *airline_data_filename;
     if (argc == 1) {
         airport_data_filename = kFilenameInputDataAirportDefault;
@@ -106,7 +148,7 @@ int main(int argc, char *argv[]) {
         return ret;
     }
 
-    // read data
+    // read ori data
     Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);
 
     // find strongly connect components
@@ -117,11 +159,14 @@ int main(int argc, char *argv[]) {
     WriteSCCResult(scc_collection, kFilenameResultSCC);
 
     // importance
-    Data data_largest_scc(data_ori, scc_collection[0]);
+    Data data_largest_scc(data_ori, scc_collection[0]);// only run importance on the largest scc
+    // importance by iteration
     std::vector<double> importance_it = ImportanceIteration(data_largest_scc.GetAdjList(), 5000);
     WriteImportanceResult(importance_it, kFilenameResultImportanceIt);
+    // importance by LU decomposition
     std::vector<double> importance_lu = ImportanceEigenvectorByLU(data_largest_scc.GetAdjList());
     WriteImportanceResult(importance_lu, kFilenameResultImportanceLU);
+    // importance by Gaussian elimination
     std::vector<double> importance_gaussian = ImportanceEigenvectorByGaussian(data_largest_scc.GetAdjList());
     WriteImportanceResult(importance_gaussian, kFilenameResultImportanceGaussian);
 
