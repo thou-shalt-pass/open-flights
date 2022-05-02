@@ -2,20 +2,32 @@ CXX=clang++
 INCLUDES=-Iincludes/
 CXXFLAGS=-std=c++14 -g -fstandalone-debug -Wall -Wextra -pedantic $(INCLUDES)
 
-main: bin/main
+all: main tests
+tests: tests_importance tests_importance_mutual_actual tests_matrix_operation tests_strongly_connected_components tests_strongly_connected_components tests_all_pairs_shortest_paths tests_dfs
+main: algorithm_driver result_interpreter
+
+algorithm_driver: bin/algorithm_driver
+result_interpreter: bin/result_interpreter
 tests_importance: bin/tests_importance
+tests_importance_mutual_actual: bin/tests_importance_mutual_actual
 tests_matrix_operation: bin/tests_matrix_operation
 tests_strongly_connected_components: bin/tests_strongly_connected_components
 tests_all_pairs_shortest_paths: bin/tests_all_pairs_shortest_paths
 tests_dfs: bin/tests_dfs
 
-bin/main: ./obj/data.o ./obj/main.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/matrix_operation.o
+bin/algorithm_driver: ./obj/data.o ./obj/algorithm_driver.o ./obj/strongly_connected_components.o ./obj/importance.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/matrix_operation.o
+bin/result_interpreter: ./obj/data.o ./obj/result_interpreter.o ./obj/all_pairs_shortest_paths.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_matrix_operation.o ./obj/matrix_operation.o
+bin/tests_importance: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance.o ./obj/importance.o ./obj/data.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+bin/tests_importance_mutual_actual: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_importance_mutual_actual.o ./obj/importance.o ./obj/data.o ./obj/strongly_connected_components.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+bin/tests_matrix_operation: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_matrix_operation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 bin/tests_strongly_connected_components: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_strongly_connected_components.o ./obj/strongly_connected_components.o
@@ -30,10 +42,10 @@ bin/tests_dfs: ./reserve_obj/catch.o ./obj/tests_utilities.o ./obj/tests_dfs.o
 obj/data.o: ./src/data.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-obj/main.o: ./src/main.cpp
+obj/algorithm_driver.o: ./src/algorithm_driver.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-obj/matrix_operation.o: ./src/matrix_operation.cpp
+obj/result_interpreter.o: ./src/result_interpreter.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 obj/importance.o: ./src/importance.cpp
@@ -51,6 +63,9 @@ obj/tests_matrix_operation.o: ./tests/tests_matrix_operation.cpp
 obj/tests_importance.o: ./tests/tests_importance.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
+obj/tests_importance_mutual_actual.o: ./tests/tests_importance_mutual_actual.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
 obj/tests_strongly_connected_components.o: ./tests/tests_strongly_connected_components.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
@@ -66,9 +81,9 @@ obj/tests_utilities.o: tests/tests_utilities.cpp
 reserve_obj/catch.o: tests/catch.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-.DEFAULT_GOAL := main
+.DEFAULT_GOAL := algorithm_driver
 
-.PHONY: clean main tests_importance tests_matrix_operation tests_strongly_connected_components tests_dfs tests_all_pairs_shortest_paths
+.PHONY: clean all algorithm_driver result_interpreter tests_importance tests_importance_mutual_actual tests_matrix_operation tests_strongly_connected_components tests_dfs tests_all_pairs_shortest_paths
 
 clean:
 	rm -rf ./bin/* ./obj/*

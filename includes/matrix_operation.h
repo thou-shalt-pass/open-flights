@@ -1,137 +1,106 @@
 #ifndef _MATRIX_OPERATION_H
 #define _MATRIX_OPERATION_H
 
+#include <tuple>
+
 #include "type.h"
-#include <iostream>
-
-class Fraction{
-    public:
-        /**
-         * @brief Default Constructor for Fraction for value 0
-         * Set numerator to 0 and denominator to 1000
-         */
-        Fraction();
-
-        /**
-         * @brief Construct a new Fraction object 
-         * Set numerator to n and denominator to d
-         * @param n value for numerator
-         * @param d value for denominator
-         */
-        Fraction(int n , int d );
-
-        /**
-         * @brief Construct a new Fraction object with true value v 
-         * three decimal precision
-         * @param v the true value for the fraction
-         */
-        Fraction(double v);
-
-        /**
-         * @brief Find the Inverse of a Fraction (example: Inverse(3/10) --> 10/3 )
-         * 
-         * @return Fraction 
-         */
-        Fraction FindInverse();
-
-        /**
-         * @brief make a fraction valid
-         * if the fraction's numerator and denominator are both 0, throw a runtime error
-         * if the fraction's denominator is 0, set numerator to maximum value for int, and denominator to 1
-         */
-        void Valid();
-
-        /**
-         * @brief Reduce a fraction to lowest term 
-         * example: 3/6 --> 1/2
-         */
-        void reduction();
-
-        /**
-         * @brief return a string containing the contents of a fraction
-         * example: "5/6" 
-         * @return a string containing the contents 
-         */
-        std::string toString() const;
-
-        int numerator;
-        int denominator;
-    private:
-
-};
 
 /**
- * @brief Find the greatest common divisor for number a and b using Euclid's Algorithm
+ * @brief LU decomposition 
  * 
- * @param a 
- * @param b 
- * @return the greatest common divisor 
+ * reference: CLRS 
+ * 
+ * @tparam T data type 
+ * @param mat_a sqare matrix that is able to perform LU decomposition 
+ * @return pair of L and U matrix 
  */
-int FindGCD(int a, int b);
+template <typename T>
+std::pair<Matrix<T>, Matrix<T> > LUDecomposition(Matrix<T>& mat_a) {
+    size_t n = mat_a.size();
+    Matrix<T> mat_l(n, std::vector<T>(n, 0)), mat_u(n, std::vector<T>(n, 0));
+    for (size_t i = 0; i < n; ++i) { mat_l[i][i] = 1; }
+    for (size_t k = 0; k < n; ++k) {
+        mat_u[k][k] = mat_a[k][k];
+        for (size_t i = k + 1; i < n; ++i) {
+            mat_l[i][k] = mat_a[i][k] / mat_u[k][k];
+            mat_u[k][i] = mat_a[k][i];
+        }
+        for (size_t i = k + 1; i < n; ++i) {
+            for (size_t j = k + 1; j < n; ++j) {
+                mat_a[i][j] = mat_a[i][j] - mat_l[i][k] * mat_u[k][j];
+            }
+        }
+    }
+    return std::make_pair(std::move(mat_l), std::move(mat_u));
+}
 
 /**
- * @brief << operator, use to_string function
+ * @brief find the null space of a matrix with exactly one free variable
  * 
- * @param os the stream to insert into 
- * @param f 
- * @return std::ostream& 
+ * @tparam T data type 
+ * @param mat_a matrix with exactly one free varible 
+ *      and the free varible is at the last column 
+ * @return vector in the null space 
  */
-std::ostream& operator << (std::ostream& os,Fraction f);
+template <typename T>
+std::vector<T> FindOneDimNullSpaceByLU(Matrix<T>& mat_a) {
+    size_t n = mat_a.size();
+    Matrix<T> mat_l, mat_u;
+    std::tie(mat_l, mat_u) = LUDecomposition(mat_a);
+    std::vector<T> vec_x(n, 0);
+    vec_x[n - 1] = 1;
+    for (size_t i = n - 2; i < n; --i) {
+        for (size_t j = i + 1; j < n; ++j) {
+            vec_x[i] -= mat_u[i][j] * vec_x[j];
+        }
+        vec_x[i] /= mat_u[i][i];
+    }
+    return vec_x;
+}
+
+template <typename T>
+void RowScale(std::vector<T>& row, T scalar) {
+    for (size_t i = 0; i < row.size(); ++i) {
+        row[i] = row[i] * scalar;
+    }
+}
+
+template <typename T>
+void RowEliminate(std::vector<T>& row1, std::vector<T>& row2, T scalar) {
+    for (size_t i = 0; i < row1.size(); ++i) {
+        row1[i] = row1[i] - row2[i] * scalar;
+    }
+}
 
 /**
- * @brief addition operator 
+ * @brief find the null space of a matrix with exactly one free variable
  * 
- * @param f1 
- * @param f2 
- * @return Fraction 
+ * @tparam T data type 
+ * @param mat_a matrix with exactly one free varible 
+ *      and the free varible is at the last column 
+ * @return vector in the null space 
  */
-Fraction operator+ (const Fraction& f1, const Fraction& f2);
-
-/**
- * @brief subtraction operator
- * 
- * @param f1 
- * @param f2 
- * @return Fraction 
- */
-Fraction operator- (const Fraction& f1, const Fraction& f2);
-
-/**
- * @brief multiplication operator
- * 
- * @param f1 
- * @param f2 
- * @return Fraction 
- */
-Fraction operator* (const Fraction& f1, const Fraction& f2);
-
-/**
- * @brief division operator 
- * 
- * @param f1 
- * @param f2 
- * @return Fraction 
- */
-Fraction operator/ (const Fraction& f1, const Fraction& f2);
-
-/**
- * @brief Comparision operator
- * 
- * @param f1 
- * @param f2 
- * @return true if f1.numerator/f1.denominator == f2.numerator/f2.denominator
- * @return false 
- */
-bool operator== (const Fraction& f1, const Fraction& f2);
-
-std::vector<Fraction> FindOneDimNullSpace(const Matrix<Fraction>& matrix);
-
-void rowSwap(std::vector<Fraction>& row1, std::vector<Fraction>& row2);
-
-void rowScale(std::vector<Fraction>& row, double scalar);
-
-void rowEliminate(std::vector<Fraction>& row1, std::vector<Fraction>& row2, Fraction scalar);
-
-void Print2Dvector(Matrix<Fraction>& matrix);
+template <typename T>
+std::vector<T> FindOneDimNullSpaceByGaussian(Matrix<T>& matrix) {
+    size_t n = matrix.size();
+    size_t row = 0;
+    for (size_t col = 0; col < n - 1; ++col) {
+        RowScale(matrix[row], 1.0 / matrix[row][col]);
+        // Elimate the value at this column
+        for (size_t y = 0; y < n; ++y) {
+            if (y != row) {
+                double factor = matrix[y][col] / matrix[row][col];
+                RowEliminate(matrix[y], matrix[row],factor);
+            }
+        }
+        ++row;
+    }
+    std::vector<double> solution;
+    for(size_t row = 0; row < n - 1; ++row) {
+        solution.push_back(-matrix[row][n - 1]);
+    }
+    solution.push_back(1);
+    return solution;
+}
 
 #endif

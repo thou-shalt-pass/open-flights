@@ -11,7 +11,7 @@ AdjList Transpose(const AdjList& graph) {
     return transpose_graph;
 }
 
-std::list<std::list<size_t> > StronglyConnectedComponents(const AdjList& graph) {
+std::vector<std::vector<size_t> > StronglyConnectedComponents(const AdjList& graph) {
     size_t n = graph.size();
 
     // topological sort
@@ -35,7 +35,7 @@ std::list<std::list<size_t> > StronglyConnectedComponents(const AdjList& graph) 
         topo_sort.pop_back();
         return v;
     };
-    std::list<std::list<size_t> > scc;
+    std::vector<std::vector<size_t> > scc;
     auto op_before_component_2 = [&scc](size_t) { scc.emplace_back(); return 0; };
     auto op_start_visit_2 = [&scc](size_t node, int) { scc.back().push_back(node); };
     DFS(transpose_graph, look_next_origin_2, op_before_component_2, op_start_visit_2, [](size_t, int) {});

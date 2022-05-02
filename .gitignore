@@ -3,3 +3,5 @@ obj/**
 reserve_obj/**
 .vscode/**
 workspace.code-workspace
+result.tar.gz
+result/**
