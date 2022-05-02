@@ -1,6 +1,13 @@
 #include "importance.h"
 #include "matrix_operation.h"
 
+/**
+ * @brief helper for importance by interation
+ * 
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @param curr_importance old PageRank vector
+ * @param next_importance new PageRank vector (out-para)
+ */
 void PageRank(const AdjList& graph, const std::vector<double>& curr_importance, 
     std::vector<double>& next_importance) {
     next_importance.clear();
@@ -13,6 +20,13 @@ void PageRank(const AdjList& graph, const std::vector<double>& curr_importance,
     }
 }
 
+/**
+ * @brief find the importance value of each airport by using PageRank
+ * 
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @param iteration_times the number of iterations
+ * @return `vector[i] < vector[j]` if and only if i is less important than j
+ */
 std::vector<double> ImportanceIteration(const AdjList& graph, unsigned iteration_times) {
     double init_importance = static_cast<double>(1) / graph.size();
     std::vector<double> importance_1(graph.size(), init_importance), importance_2;
@@ -28,6 +42,12 @@ std::vector<double> ImportanceIteration(const AdjList& graph, unsigned iteration
     return importance_1;
 }
 
+/**
+ * @brief make a markov matrix
+ * 
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @return Matrix<double> 
+ */
 Matrix<double> Normalize(const AdjList& graph) {
     size_t n = graph.size();
     Matrix<double> result(n, std::vector<double>(n, 0));
@@ -42,6 +62,12 @@ Matrix<double> Normalize(const AdjList& graph) {
     return result;
 }
 
+/**
+ * @brief find the importance value of each airport
+ * 
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @return `vector[i] < vector[j]` if and only if i is less important than j
+ */
 std::vector<double> ImportanceEigenvectorByLU(const AdjList& graph) {
     Matrix<double> matrix = Normalize(graph);
     for (size_t i = 0; i < graph.size(); ++i) {
@@ -50,6 +76,12 @@ std::vector<double> ImportanceEigenvectorByLU(const AdjList& graph) {
     return FindOneDimNullSpaceByLU(matrix);
 }
 
+/**
+ * @brief find the importance value of each airport
+ * 
+ * @param graph adjacency list of a simple, directed, strongly connected graph
+ * @return `vector[i] < vector[j]` if and only if i is less important than j
+ */
 std::vector<double> ImportanceEigenvectorByGaussian(const AdjList& graph) {
     Matrix<double> matrix = Normalize(graph);
     for (size_t i = 0; i < graph.size(); ++i) {
