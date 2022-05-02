@@ -6,11 +6,20 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief 2D vector
+ * 
+ * @tparam T data type
+ */
 template <typename T>
 using Matrix = std::vector<std::vector<T> >;
 
 constexpr unsigned kNoAirline = (std::numeric_limits<unsigned>::max() >> 1) - 100000;
 
+/**
+ * @brief edge info represents airline
+ * 
+ */
 struct Edge {
 	unsigned distance;
 
@@ -18,6 +27,10 @@ struct Edge {
 	Edge(unsigned distance) : distance(distance) {}
 };
 
+/**
+ * @brief node info represents airport
+ * 
+ */
 struct Node{
 	std::string city;
 	std::string airport_name;
@@ -37,6 +50,10 @@ struct Node{
 using AdjList = std::vector<std::list<size_t> >;
 using AdjMatrix = Matrix<Edge>;
 
+/**
+ * @brief strongly connected components result wrapper
+ * 
+ */
 struct SCCResult {
     // collection of sets (should in the order of decreasing size of sets)
     std::vector<std::vector<size_t> > collection;
@@ -44,6 +61,10 @@ struct SCCResult {
     std::vector<size_t> node_idx_to_scc_idx;
 };
 
+/**
+ * @brief importance alogorithms result wrapper
+ * 
+ */
 struct ImportanceIntegrationResult {
     std::vector<size_t> order_to_idx;// order -> node_idx
     std::vector<size_t> idx_to_order;// node_idx -> order
@@ -62,6 +83,10 @@ struct ImportanceIntegrationResult {
     }
 };
 
+/**
+ * @brief all pairs shortest path result wrapper
+ * 
+ */
 struct APSPResult {
     Matrix<unsigned> distance;
     Matrix<size_t> next;
