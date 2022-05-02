@@ -87,3 +87,21 @@ Implement test cases for strongly connected components, DFS; implement Floyd-War
 - Finish `results.md`
 - Answer the leading question to our project (shortest path between given airports and most important airports)
 
+## 5/1/2022
+
+### Goal of the week
+
+Finish writing readme and report
+
+### Tasks Accomplished
+
+- Yirong Chen, Leo Luo, and Yanzhen Shen: finished implementing drivers for test runs; finished writing most part of readme, report, and slides
+
+### Problem Encountered
+
+- The output for running the driver was too large (~800MB), so we have to compress the precomputed into `result.tar.gz` to push onto github. 
+
+### Plan for Next Week
+
+- Record the presentation video
+
