@@ -82,7 +82,7 @@ Interact with users.
 (`<result-zip-filename>` is optional 
 and the default value is `result.tar.gz`)
 
-We can run `./bin/result_interpreter expected_result.tar.gz` 
+We can run `./bin/result_interpreter sample_result.tar.gz` 
 to interpret the precomputed result from the default dataset (`data/airport.csv` and `data/route.csv`). 
 
 The result_interpreter provides 5 interactive command
