@@ -73,6 +73,12 @@ int main(int argc, char *argv[]) {
     int ret;
     char buf[128];
 
+    std::cout << "---------------------------------------\n";
+    std::cout << " CS 225 Final Project: OpenFlights\n";
+    std::cout << " Team Members: tluo9-yanzhen4-yirongc3\n";
+    std::cout << " Algorithm Driver\n";
+    std::cout << "---------------------------------------\n";
+
     // make result directory
     system("mkdir result > /dev/null 2>&1");
     
@@ -88,6 +94,7 @@ int main(int argc, char *argv[]) {
         airport_data_filename = argv[1];
         airline_data_filename = argv[2];
     }
+    std::cout << "You are using airport and airline dataset: " << airport_data_filename << ", " << airline_data_filename << '\n';
     snprintf(buf, sizeof(buf), "cp %s %s", airport_data_filename, kFilenameResultInputDataAirport);
     ret = system(buf);
     if (ret != 0) {
@@ -98,7 +105,6 @@ int main(int argc, char *argv[]) {
     if (ret != 0) {
         return ret;
     }
-    std::cout << "You are using airport and airline dataset: " << airport_data_filename << ", " << airline_data_filename << '\n';
 
     // read data
     Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);

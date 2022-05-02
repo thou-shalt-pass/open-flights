@@ -206,6 +206,13 @@ int main(int argc, char *argv[]) {
     int ret;
     char buf[128];
 
+    std::cout << "---------------------------------------\n";
+    std::cout << " CS 225 Final Project: OpenFlights\n";
+    std::cout << " Team Members: tluo9-yanzhen4-yirongc3\n";
+    std::cout << " Result Interpreter\n";
+    std::cout << "---------------------------------------\n";
+
+
     // unzip result
     const char* result_package_filename;
     if (argc == 1) {
@@ -213,12 +220,14 @@ int main(int argc, char *argv[]) {
     } else {
         result_package_filename = argv[1];
     }
+    std::cout << "You are using result package: " << result_package_filename << '\n';
     snprintf(buf, sizeof(buf), "tar -xf %s", result_package_filename);
     ret = system(buf);
     if (ret != 0) {
         return ret;
     }
-    std::cout << "You are using result package: " << result_package_filename << '\n';
+
+    std::cout << "Initializing...\n";
 
     // read data and result; init data structures
     Data data_ori = ReadData(kFilenameResultInputDataAirport, kFilenameResultInputDataAirline);
@@ -230,6 +239,8 @@ int main(int argc, char *argv[]) {
         kFilenameResultAPSPDistance, kFilenameResultAPSPNext);
 
     std::cout << "Initialization finished\n";
+
+    std::cout << "Usage: \n- dfs origin-code\n- scc code\n- sp src-code dst-code\n- top limit\n- rank code\n";
 
     // interact with users
     while (true) {
