@@ -331,7 +331,10 @@ int main(int argc, char *argv[]) {
                 std::cout << "Usage: \n" << kDFSUsage << "\n";
                 continue;
             }
-            RunDFS(data_ori, spl[1], std::cout);
+            std::ofstream ofs("dfs_result");
+            RunDFS(data_ori, spl[1], ofs);
+            ofs.close();
+            std::cout << "DFS result is outputted to file dfs_result\n";
         } else if (spl[0] == "scc") {
             // find the scc idx of the airport
             if (spl.size() != 2) {
