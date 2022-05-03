@@ -14,7 +14,7 @@ std::vector<size_t> PathReconstruction(const Matrix<size_t>& next, size_t start,
     std::vector<size_t> path;
     path.push_back(start);
     size_t current = start;
-    while(current != end) {
+    while (current != end) {
         current = next[current][end];
         path.push_back(current);
     }
@@ -32,8 +32,8 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
     size_t n = distance.size();
     Matrix<size_t> next(n, std::vector<size_t>(n, kNoAirline));
 
-    for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < n; j++) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
             if (distance[i][j] != kNoAirline) {
                 next[i][j] = j;
             }
@@ -66,8 +66,8 @@ Matrix<size_t> FloydWarshall(Matrix<unsigned>& distance) {
 APSPResult AllPairsShortestPaths(const AdjMatrix& graph) {
     size_t n = graph.size();
     Matrix<unsigned> distance(n, std::vector<unsigned>(n));
-    for(size_t i = 0; i < n; ++i){
-        for (size_t j = 0; j < n; j++) {
+    for(size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
             if (i == j) {
                 distance[i][j] = 0;
             } else {
