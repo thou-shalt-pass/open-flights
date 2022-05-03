@@ -1,8 +1,7 @@
 #include <cmath>
+#include <fstream>
 #include <istream>
 #include <ostream>
-#include <fstream>
-#include <stdexcept>
 #include <string>
 #include <unordered_set>
 
@@ -229,6 +228,13 @@ Data ReadData(const std::string& airport_filename, const std::string& airline_fi
     return data;
 }
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(std::ostream& os, std::istream& is, 
         const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
@@ -240,6 +246,13 @@ void FilterAirports(std::ostream& os, std::istream& is,
     }
 }
 
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(std::ostream& os, std::istream& is,
          const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
@@ -250,6 +263,13 @@ void FilterAirlines(std::ostream& os, std::istream& is,
     }
 }
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes) {
     std::ifstream ifs(in_filename);
@@ -261,6 +281,13 @@ void FilterAirports(const std::string& out_filename, const std::string& in_filen
     ofs.close();
 }
 
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes) {
     std::ifstream ifs(in_filename);

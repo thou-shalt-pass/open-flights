@@ -89,10 +89,25 @@ private:
 	 */
 	void ReadAirline(std::istream& airline_is);
 
-	std::vector<Node> idx_to_node_;// map index to node
-	std::unordered_map<std::string, size_t> code_to_idx_;// map code to idx
-	AdjList adj_list_;// adj list
-	AdjMatrix adj_matrix_;// adj matrix
+	/**
+	 * @brief map index to node
+	 */
+	std::vector<Node> idx_to_node_;
+
+	/**
+	 * @brief map code to idx
+	 */
+	std::unordered_map<std::string, size_t> code_to_idx_;
+
+	/**
+	 * @brief adj list (should represents the simple directed grpah)
+	 */
+	AdjList adj_list_;
+
+	/**
+	 * @brief adj matrix (should represents the simple directed grpah)
+	 */
+	AdjMatrix adj_matrix_;
 };
 
 /**
@@ -113,15 +128,44 @@ Data ReadData(const std::string& airport_filename, const std::string& airline_fi
  */
 std::vector<std::string> Split(const std::string& line, char delimiter);
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(std::ostream& os, std::istream& is, 
 		const std::unordered_set<std::string>& allowed_codes);
+
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(std::ostream& os, std::istream& is, 
 		const std::unordered_set<std::string>& allowed_codes);
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes);
+
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes);
-
 
 #endif
