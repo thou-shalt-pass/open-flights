@@ -1,10 +1,8 @@
 #include "tests_utilities.h"
 
+#include "matrix_operation.h"
 #include "type.h"
 
-#include "matrix_operation.h"
-
-#include <iostream>
 
 std::vector<std::vector<double>> TwoDim(const std::vector<double> matrix){
     std::vector< std::vector<double> > matrix2D;

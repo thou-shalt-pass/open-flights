@@ -1,8 +1,7 @@
 #include "tests_utilities.h"
 
-#include "type.h"
-
 #include "strongly_connected_components.h"
+#include "type.h"
 
 TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connected_components]") {
     SECTION("single scc") {

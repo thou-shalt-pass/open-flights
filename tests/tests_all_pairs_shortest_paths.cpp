@@ -1,10 +1,7 @@
 #include "tests_utilities.h"
 
-#include "type.h"
-
-#include <iostream>
-
 #include "all_pairs_shortest_paths.h" 
+#include "type.h"
 
 AdjMatrix EdgeListToAdjMatrix(const std::vector<std::pair<size_t, size_t> >& verticies, const std::vector<unsigned>& weights, size_t n) {
     AdjMatrix mat_distance(n, std::vector<Edge>(n, kNoAirline));

@@ -1,11 +1,8 @@
-#include <fstream>
-
 #include "tests_utilities.h"
 
 #include "data.h"
-#include "type.h"
-
 #include "importance.h"
+#include "type.h"
 
 TEST_CASE("ImportanceIteration(const AdjList& graph, unsigned iteration_times)", "[importance_it]") {
     SECTION("strongly connected 1") {

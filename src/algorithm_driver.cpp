@@ -1,15 +1,13 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 #include "all_pairs_shortest_paths.h"
 #include "data.h"
+#include "filename_def.h"
 #include "importance.h"
 #include "strongly_connected_components.h"
-
-#include "filename_def.h"
 
 /**
  * @brief output a vector in csv format to ostream

@@ -1,8 +1,7 @@
 #include "tests_utilities.h"
 
-#include "type.h"
-
 #include "dfs.h"
+#include "type.h"
 
 // callback function types
 enum OpType { kOpBeforeComponent, kOpBeforeVisit, kOpAfterVisit };

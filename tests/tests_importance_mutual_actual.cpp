@@ -1,14 +1,10 @@
-#include <fstream>
-
 #include "tests_utilities.h"
 
 #include "data.h"
-#include "type.h"
-
 #include "filename_def.h"
-
 #include "importance.h"
 #include "strongly_connected_components.h"
+#include "type.h"
 
 TEST_CASE("mutal test actual data scc", "[mutual_actual]") {
     Data data_ori = ReadData(kFilenameInputDataAirportDefault, kFilenameInputDataAirlineDefault);
