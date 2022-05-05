@@ -49,6 +49,6 @@ For matrices of size smaller than or equal to 5, we compared all possible shorte
 
 ## Conclusion
 
-With Floyd-Warshall, we are able to calculate the shortest path for all pairs of airports. The detailed shortest path results can be viewed by running `result_interpretor` with `sp` command.
+With Floyd-Warshall, we are able to find the shortest path for all pairs of airports. The detailed shortest path results can be viewed by running `result_interpretor` with `sp` command.
  
 According to our PageRank algorithm, the most important airport is Frankfurt am Main Airport located in Frankfurt, Germany. This aligns with the reality since Frankfurt is approximately located in the middle of Europe, allowing it to efficiently transition flights, and a major site for many global corporate headquarters, including the European Central Bank.
