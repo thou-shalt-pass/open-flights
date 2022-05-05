@@ -1,8 +1,7 @@
 #include "tests_utilities.h"
 
-#include "type.h"
-
 #include "dfs.h"
+#include "type.h"
 
 // callback function types
 enum OpType { kOpBeforeComponent, kOpBeforeVisit, kOpAfterVisit };
@@ -113,10 +112,10 @@ TEST_CASE("DFS all self-loop", "[dfs]") {
 
 TEST_CASE("DFS all disconnected", "[dfs]") {
     AdjList graph {
-        {  },// 0
-        {  },// 1
-        {  },// 2
-        {  },// 3
+        { },// 0
+        { },// 1
+        { },// 2
+        { },// 3
     };
     std::vector<size_t> look_next_origin_sequence { 3, 2, 1, 0 };
     std::vector<std::tuple<OpType, size_t, size_t> > expected_op_sequence { 

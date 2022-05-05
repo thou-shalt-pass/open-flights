@@ -1,13 +1,19 @@
 #include <cmath>
+#include <fstream>
 #include <istream>
 #include <ostream>
-#include <fstream>
-#include <stdexcept>
 #include <string>
 #include <unordered_set>
 
 #include "data.h"
 
+/**
+ * @brief split utility function
+ * 
+ * @param line input str
+ * @param delimiter delimiter
+ * @return std::vector<std::string> 
+ */
 std::vector<std::string> Split(const std::string& line, char delimiter) {
     std::vector<std::string> info;
     bool quotation = false;
@@ -46,11 +52,22 @@ std::vector<std::string> Split(const std::string& line, char delimiter) {
     return info;
 }
 
+/**
+ * @brief store a simple directed graph
+ * 
+ * @param airport_is airport dataset istream
+ * @param airline_is airline dataset istream
+ */
 Data::Data(std::istream& airport_is, std::istream& airline_is) {
     ReadAirport(airport_is);
     ReadAirline(airline_is);
 }
 
+/**
+ * @brief Helper of Data(std::istream& airport_is, std::istream& airline_is)
+ * 
+ * @param airport_is airport dataset istream
+ */
 void Data::ReadAirport(std::istream& airport_is) {
     std::string line;
     while (std::getline(airport_is, line)) {
@@ -64,7 +81,12 @@ void Data::ReadAirport(std::istream& airport_is) {
     }
 }
 
-// convert degrees to radian
+/**
+ * @brief convert degree to radiant
+ * 
+ * @param degree 
+ * @return long double 
+ */
 long double Data::ToRadiant(const long double degree) {
     long double ratio = (M_PI) / 180;
     return (ratio * degree);
@@ -72,7 +94,15 @@ long double Data::ToRadiant(const long double degree) {
 
 constexpr int kEarthRadius = 6371;
 
-// Haversine formula to calculate distance between 2 points on a sphere given longtitudes and latitudes
+/**
+ * @brief get distance between two locations by using Haversine formula
+ * 
+ * @param lat1 latitude of location 1
+ * @param long1 longitude of location 1
+ * @param lat2 latitude of location 2
+ * @param long2 longitude of location 2
+ * @return unsigned 
+ */
 unsigned Data::Distance(long double lat1, long double long1, long double lat2, long double long2) {
     lat1 = ToRadiant(lat1);
     lat2 = ToRadiant(lat2);
@@ -84,7 +114,12 @@ unsigned Data::Distance(long double lat1, long double long1, long double lat2, l
     result = 2 * asin(sqrt(result)) * kEarthRadius;
     return static_cast<unsigned>(result);
 }
- 
+
+/**
+ * @brief Helper of Data(std::istream& airport_is, std::istream& airline_is)
+ * 
+ * @param airline_is airport dataset istream
+ */
 void Data::ReadAirline(std::istream& airline_is) {
     size_t airport_size = idx_to_node_.size();
     std::vector<std::unordered_set<size_t> > adj_list_set(airport_size);
@@ -112,14 +147,42 @@ void Data::ReadAirline(std::istream& airline_is) {
     }
 }
 
+/**
+ * @brief get the adjacency list represents the simple directed grpah
+ * 
+ * @return const AdjList& 
+ */
 const AdjList& Data::GetAdjList() const { return adj_list_; }
 
+/**
+ * @brief get the adjacency matrix represents the simple directed grpah
+ * 
+ * @return const AdjMatrix& 
+ */
 const AdjMatrix& Data::GetAdjMatrix() const { return adj_matrix_; }
 
+/**
+ * @brief get the Node object represents the graph
+ * 
+ * @param idx idx of the node in adj list and adj matrix
+ * @return const Node& 
+ */
 const Node& Data::GetNode(size_t idx) const { return idx_to_node_[idx]; }
 
+/**
+ * @brief get idx of the node in adj list and adj matrix
+ * 
+ * @param code IATA code
+ * @return size_t 
+ */
 size_t Data::GetIdx(const std::string& code) const { return code_to_idx_.at(code); }
 
+/**
+ * @brief Filter data
+ * 
+ * @param data_ori original data object
+ * @param allowed_idx all idx in this vector must be valid (in the range; no repeat elements)
+ */
 Data::Data(const Data& data_ori, const std::vector<size_t>& allowed_idx) {
     size_t n_ori = data_ori.GetAdjList().size(), n_curr = allowed_idx.size();
     // allowed_idx maps current idx to original idx
@@ -150,6 +213,13 @@ Data::Data(const Data& data_ori, const std::vector<size_t>& allowed_idx) {
     }
 }
 
+/**
+ * @brief make Data object
+ * 
+ * @param airport_filename airport dataset filename
+ * @param airline_filename airline dataset filename
+ * @return Data 
+ */
 Data ReadData(const std::string& airport_filename, const std::string& airline_filename) {
     std::ifstream airport_ifs(airport_filename), airline_ifs(airline_filename);
     Data data(airport_ifs, airline_ifs);
@@ -158,6 +228,13 @@ Data ReadData(const std::string& airport_filename, const std::string& airline_fi
     return data;
 }
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(std::ostream& os, std::istream& is, 
         const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
@@ -169,6 +246,13 @@ void FilterAirports(std::ostream& os, std::istream& is,
     }
 }
 
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param os ostream
+ * @param is istream
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(std::ostream& os, std::istream& is,
          const std::unordered_set<std::string>& allowed_codes) {
     std::string line;
@@ -179,6 +263,13 @@ void FilterAirlines(std::ostream& os, std::istream& is,
     }
 }
 
+/**
+ * @brief filter airports by only allowing specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirports(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes) {
     std::ifstream ifs(in_filename);
@@ -190,6 +281,13 @@ void FilterAirports(const std::string& out_filename, const std::string& in_filen
     ofs.close();
 }
 
+/**
+ * @brief filter airlines by only allowing airlines that connect specfic airports appear
+ * 
+ * @param out_filename output filename
+ * @param in_filename input filename
+ * @param allowed_codes allowed airports IATA code
+ */
 void FilterAirlines(const std::string& out_filename, const std::string& in_filename, 
 		const std::unordered_set<std::string>& allowed_codes) {
     std::ifstream ifs(in_filename);

@@ -96,7 +96,7 @@ std::vector<T> FindOneDimNullSpaceByGaussian(Matrix<T>& matrix) {
         ++row;
     }
     std::vector<double> solution;
-    for(size_t row = 0; row < n - 1; ++row) {
+    for (size_t row = 0; row < n - 1; ++row) {
         solution.push_back(-matrix[row][n - 1]);
     }
     solution.push_back(1);

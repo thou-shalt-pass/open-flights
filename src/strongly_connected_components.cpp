@@ -1,6 +1,12 @@
 #include "dfs.h"
 #include "strongly_connected_components.h"
 
+/**
+ * @brief find the transpose of the graph
+ * 
+ * @param graph adj list
+ * @return AdjList 
+ */
 AdjList Transpose(const AdjList& graph) {
     AdjList transpose_graph(graph.size());
     for (size_t u = 0; u < graph.size(); ++u) {
@@ -11,6 +17,13 @@ AdjList Transpose(const AdjList& graph) {
     return transpose_graph;
 }
 
+/**
+ * @brief find strongly connected components
+ * 
+ * @param graph adjacency list of a directed graph
+ * @return collection of sets where each set represents a strongly connect component 
+ * and contains nodes in the strongly connect component 
+ */
 std::vector<std::vector<size_t> > StronglyConnectedComponents(const AdjList& graph) {
     size_t n = graph.size();
 
