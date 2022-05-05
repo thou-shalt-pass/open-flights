@@ -1,8 +1,7 @@
 #include "tests_utilities.h"
 
-#include "type.h"
-
 #include "strongly_connected_components.h"
+#include "type.h"
 
 TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connected_components]") {
     SECTION("single scc") {
@@ -13,9 +12,10 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 0, 2 }
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 1, 2, 3 } };
+        std::vector<std::vector<size_t> > expect { { 0, 1, 2, 3 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("multiple scc") {
         AdjList graph {
             { 1 },// 0
@@ -28,9 +28,10 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 7 },// 7
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 1, 4 }, { 2, 3 }, { 5, 6 }, { 7 } };
+        std::vector<std::vector<size_t> > expect { { 0, 1, 4 }, { 2, 3 }, { 5, 6 }, { 7 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("self-loop") {
         AdjList graph {
             { 0 },// 0
@@ -39,20 +40,22 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 3 },// 3
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0 }, { 1 }, { 2 }, { 3 } };
+        std::vector<std::vector<size_t> > expect { { 0 }, { 1 }, { 2 }, { 3 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("disjoint points") {
         AdjList graph {
-            {  },// 0
-            {  },// 1
-            {  },// 2
-            {  },// 3
+            { },// 0
+            { },// 1
+            { },// 2
+            { },// 3
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0 }, { 1 }, { 2 }, { 3 } };
+        std::vector<std::vector<size_t> > expect { { 0 }, { 1 }, { 2 }, { 3 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("large complex scc with single disjoint point") {
         AdjList graph {
             { 1, 15 },// 0
@@ -75,10 +78,11 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             {  },// 17
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        std::vector<std::vector<size_t> > expect { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                                                     11, 12, 13, 14, 15, 16 }, { 17 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("spiraling large complex scc") {
         AdjList graph {
             { 1, 2, 3, 4, 5 },// 0
@@ -95,9 +99,10 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 6 },// 11
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+        std::vector<std::vector<size_t> > expect { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("multiple large complex scc") {
         AdjList graph {
             { 8 },// 0
@@ -118,10 +123,11 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 11 },// 15
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 8, 13, 7, 3, 12}, { 2, 15, 11, 6, 14 },
+        std::vector<std::vector<size_t> > expect { { 0, 8, 13, 7, 3, 12}, { 2, 15, 11, 6, 14 },
                                                  { 5, 9, 1, 4, 10 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("all connected but not strongly connected 1") {
         AdjList graph {
             { 1 },// 0
@@ -137,6 +143,7 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
         std::vector<std::vector<size_t> > expect = { { 0, 1, 4 }, { 2, 3, 7 }, { 5, 6 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
+
     SECTION("all connected but not strongly connected 2") {
         AdjList graph {
             { 5, 1 },// 0
@@ -157,8 +164,8 @@ TEST_CASE("StronglyConnectedComponents(const AdjList& graph)", "[strongly_connec
             { 14 },// 15
         };
         std::vector<std::vector<size_t> > result = StronglyConnectedComponents(graph);
-        std::vector<std::vector<size_t> > expect = { { 0, 1, 2, 3 }, { 5, 4, 6 }, { 7, 8, 9, 10, 11 },
-                                                {  12, 13, 14, 15 } };
+        std::vector<std::vector<size_t> > expect { { 0, 1, 2, 3 }, { 5, 4, 6 }, { 7, 8, 9, 10, 11 },
+                                                { 12, 13, 14, 15 } };
         CheckPartition(result.cbegin(), result.cend(), expect.cbegin(), expect.cend());
     }
 }
