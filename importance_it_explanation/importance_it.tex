@@ -1,0 +1,162 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{tikz-qtree}
+\usepackage{fancyhdr}
+\usepackage{diagbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{ulem}
+\usepackage{clrscode3e}
+
+\renewcommand{\proofname}{\bf Proof}
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{algorithm}[theorem]{Algorithm}
+
+\def\RR{\mathbb{R}}
+\def\ZZ{\mathbb{Z}}
+\def\NN{\mathbb{N}}
+\def\QQ{\mathbb{Q}}
+\def\CC{\mathbb{C}}
+\def\FF{\mathbb{F}}
+\def\KK{\mathbb{K}}
+\def\calBB{\mathcal{B}}
+\def\calCC{\mathcal{C}}
+\def\calLL{\mathcal{L}}
+\def\calPP{\mathcal{P}}
+\def\implies{\Longrightarrow}
+\def\bfit#1{\textit{\textbf{#1}}}
+
+\title{ImportanceIteration Algorithm Explanation}
+\author{Yirong Chen, Leo Luo, Yanzhen Shen}
+\date{5/6/2022}
+
+\begin{document}
+\maketitle
+
+Note: All indexes in this file are starting from $0$. 
+
+\section*{Correctness}
+
+We will first show that function \mintinline{cpp}{PageRank} in \mintinline{cpp}{src/importance.cpp} 
+act as a single time of matrix multplication. 
+
+Consider the procedure \proc{Single-Iteration}.
+\begin{codebox}
+    \Procname{$\proc{Single-Iteration}(G, v)$}
+    \li let $w$ be a vector with $| V |$ elements and initialized to $0$. 
+    \li \For $i = 0$ \To $| V | - 1$ \Do
+    \li     $p \gets \frac{v[i]}{| G.Adj[i] |}$
+    \li     \For each $j \in G.adj[i]$ \Do
+    \li         $w[j] \gets w[j] + p$
+            \End
+        \End
+\end{codebox}
+Note that \proc{Single-Iteration} is the pseudocode of \mintinline{cpp}{PageRank}. 
+
+\begin{lemma} \label{lemma:single_it}
+    Let $G = (V, E)$ be a directed, strongly connected, simple graph. 
+    Let $A$ be the adjcency matrix 
+    \footnote{$A[i][j] \neq 0$ iff $(i, j) \in E$ iff there is an edge from $i$ to $j$} 
+    of $G$ 
+    Let $B$ be a left stochastic matrix 
+    \footnote{a real square matrix, with each column summing to 1} 
+    from the result of normalizing $A^T$. 
+    Then $B v = \proc{Single-Iteration}(G, v)$. 
+\end{lemma}
+
+\begin{proof}
+    Let $w = Bv$. 
+    Then 
+    \begin{equation*}
+        w[i] = \sum\limits_{j = 0}^{| V | - 1} B[i][j] v[j]
+        \quad .
+    \end{equation*}
+    Let $f(j)$ maps $j$ to the number of non-zero entries in column $j$ of $B$. 
+    Since $G$ is strongly connected, $f(j) > 0$. 
+    Since $G$ is simple, all elements in $G.Adj[j]$ are unique (we can treat $G.Adj[j]$ as a set); 
+    hence $| G.Adj[j] | = f(j)$. 
+    Let 
+    \begin{equation*}
+        S_i = \{ j \in \{ 0, \cdots, | V | - 1 \} | i \in G.Adj[j] \}
+        \quad .
+    \end{equation*}
+    Since 
+    \begin{equation*}
+        B[i][j] = \frac{1}{f(j)} \neq 0 
+        \Longleftrightarrow (j, i) \in E 
+        \Longleftrightarrow i \in G.Adj[j]
+        \Longleftrightarrow j \in S_i
+        \quad ,
+    \end{equation*}
+    we have 
+    \begin{equation} \label{eq:loop_inv}
+        w[i] = \sum\limits_{j = 0}^{| V | - 1} B[i][j] v[j] 
+        = \sum\limits_{j \in S_i} \frac{1}{f(j)} v[j]
+        = \sum\limits_{j \in S_i} \frac{v[j]}{| G.Adj[j] |}
+        \quad .
+    \end{equation}
+
+    \begin{codebox}
+        \Procname{$\proc{Single-Iteration-Loop-Inversion}(G, v)$}
+        \li let $w$ be a vector with $| V |$ elements and initialized to $0$. 
+        \li \For $i = 0$ \To $| V | - 1$ \Do
+        \li     \For each $j \in S_i$ \Do
+        \li         $w[i] \gets w[i] + \frac{v[j]}{| G.Adj[j] |}$
+                \End
+            \End
+    \end{codebox}
+    $\proc{Single-Iteration-Loop-Inversion}$ is a loop inversion version of $\proc{Single-Iteration}$. 
+    Obviously, it produces the result of equation \eqref{eq:loop_inv} for all $i \in \{ 0, \cdots, | V | - 1 \}$. 
+\end{proof}
+
+Actually, the lemma is enough to show that \mintinline{cpp}{ImportanceIteration} 
+produces a same result as power iteration method. 
+
+The following theorem is cited from MATH 257: 
+\begin{theorem} \label{theorem:conv}
+    Let $A$ be an $n \times n$-left stochastic matrix with only positive entries 
+    and let $z \in \RR^n$ be a probability vector. 
+    Then 
+    \begin{equation*}
+        z_{\infty} := \lim\limits_{k \rightarrow \infty} A^k z
+    \end{equation*}
+    exists, and $z_{\infty}$ is a stationary probability vector of $A$ 
+    (i.e. $A z_{\infty} = z_{\infty}$). 
+\end{theorem}
+
+\begin{theorem}
+    The function \mintinline{cpp}{ImportanceIteration} in \mintinline{cpp}{src/importance.cpp} 
+    correctly computes PageRank vector. 
+\end{theorem}
+
+\begin{proof}
+    Immediately from \ref{lemma:single_it} and Theorem \ref{theorem:conv}. 
+\end{proof}
+
+\section*{Complexity Analysis}
+
+Let $\alpha$ be the number of iteration. 
+Because of the usage of adjacency list, 
+each invocation of \mintinline{cpp}{PageRank} or \proc{Single-Iteration} takes $\Theta(V + E)$ time. 
+Therefore, the time complexity of \mintinline{cpp}{ImportanceIteration} is $\Theta(\alpha (V + E))$, 
+which is better than the time complexity of power iteration, $\Theta(\alpha V^2)$ 
+($| V | + | E | = O(V^2)$ in a simple graph). 
+
+\section*{Acknowledge}
+
+This file uses macro package ``clrscode3e''. 
+
+\end{document}

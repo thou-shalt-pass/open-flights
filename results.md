@@ -32,6 +32,9 @@ We implemented the PageRank Algorithm in two different ways to find the importan
 
 Our first implementation used a simplified iterative method: we generated a probability vector for all the airports and iterated through the graph for a fixed number of iterations. Each time, we update the importance depending on the outflow and inflow of all airports. As we continue on the iteration, the importance score of each airport approaches a steady state. Therefore, after a fixed number of iterations, the obtained resultant vector reflects the relative importance of each airport, which can be ranked in descending order. 
 
+**More information for our first implementation:**
+[Correctness Proof and Complexity Analysis](./importance_it_explanation/importance_it.pdf)
+
 In our second implementation, we generated a probability matrix A, where the (i,j) entry represents the inflow received by the airport of index i  from the airport of index j. Note that Av = v is equivalent to solving for the eigenvectors of A with an eigenvalue of 1. In order to solve this linear system, we obtain a matrix B by subtracting 1 from every entry on the main diagonal (i.e. let B = A - I_n where I_n is the n * n identity matrix). Then we solve for B nullspace. 
 
 There are two approaches to find B nullspace. One is LU decomposition. B can be decomposed into LU, where L is a lower triangular matrix and U is an upper triangular matrix, which help us find the solution to our linear system. The other one is Gaussian Elimination. We can use basic row operations to transfer B into Row Reduced Echelon Form. We then extract the last column, multiplied by -1, and changed the (n,n) entry to 1. This is the nullspace of B and the eigenvector of A, which also represents the importance of all airports. 
