@@ -6,3 +6,11 @@ workspace.code-workspace
 result.tar.gz
 result/**
 dfs_result
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.pygtex
+*.pygstyle
+*.out

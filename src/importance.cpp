@@ -43,7 +43,7 @@ std::vector<double> ImportanceIteration(const AdjList& graph, unsigned iteration
 }
 
 /**
- * @brief make a markov matrix
+ * @brief make a left stochastic matrix
  * 
  * @param graph adjacency list of a simple, directed, strongly connected graph
  * @return Matrix<double> 
