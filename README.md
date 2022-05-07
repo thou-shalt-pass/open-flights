@@ -14,44 +14,105 @@ Our final project uses airports and route dataset from [OpenFlights](https://ope
 
 We implemented Floyd-Warshall algorithm to find the shortest path between two airports, PageRank algorithm to find important airports.
 
-## File description
+## File Description
 
-### data
+```bash
+.
+├── README.md
+├── bin
+├── data                # contains the the airport and route dataset from OpenFlights
+│   ├── airport.csv         # original airport file
+│   ├── airport_small.csv   # first 200 lines of original airport file
+│   └── route.csv           # original airport file
+├── documents
+│   ├── contract.md
+│   ├── log.md
+│   └── proposal.md
+├── importance_it_explanation       # PageRank by iteration: correctness proof and complexity analysis
+├── includes            # header files
+│   ├── all_pairs_shortest_paths.h              # Floyd-Warshall
+│   ├── data.h                                  # graph data structure and file utilities
+│   ├── dfs.h                                   # abstract DFS
+│   ├── filename_def.h                          # output filename constant definition
+│   ├── importance.h                            # PageRank
+│   ├── matrix_operation.h                      # matrix operation support for eigenvector implementation of PageRank
+│   ├── strongly_connected_components.h         # strongly connected component
+│   └── type.h                                  # data type declaration
+├── makefile
+├── obj
+├── presentation_slides.pdf
+├── reserve_obj
+├── results.md
+├── run_tests.sh                                # script: run all test cases (except tests_importance_mutual_actual; reason see the end of readme)
+├── sample_result.tar.gz                        # pre-computed result package (can be passed into result_interpreter directly)
+├── src                 # source files (repeated file description see "includes")
+│   ├── algorithm_driver.cpp                    # entry: algorithm_driver
+│   ├── all_pairs_shortest_paths.cpp
+│   ├── data.cpp
+│   ├── importance.cpp
+│   ├── result_interpreter.cpp                  # entry: result_interpreter
+│   └── strongly_connected_components.cpp
+└── tests                                       # test cases
+    ├── catch.cpp
+    ├── catch.hpp
+    ├── tests_all_pairs_shortest_paths.cpp
+    ├── tests_dfs.cpp
+    ├── tests_importance.cpp
+    ├── tests_importance_mutual_actual.cpp
+    ├── tests_matrix_operation.cpp
+    ├── tests_strongly_connected_components.cpp
+    ├── tests_utilities.cpp
+    └── tests_utilities.h
+```
 
-contains the the airport and route dataset from [OpenFlights](https://openflights.org/data.html)
+Note: the following chart relies on "mermaid".  
 
-- `airport.csv` and `route.csv` are the original source file
+```mermaid
+graph LR;
+    subgraph Entry
+        A[algorithm_driver];
+        B[result_interpreter];
+    end
 
-### documents
+    subgraph Algorithms
+        H(dfs);
+        I(strongly_connected_components);
+        J(matrix_operation);
+        K(importance);
+        L(all_pairs_shortest_paths);
+    end
 
-contains `contract.md`, `log.md`, and `proposal.md`
+    subgraph Data
+        W((data));
+    end
 
-### includes
+    A-->W;
+    B-->W;
 
-contains all header files for source files
+    A-->I;
+    I-->H;
+    A-->K;
+    K-->J;
+    A-->L;
 
-### src
-
-contains all source files
-
-- `all_pairs_shortest_paths.cpp`: Floyd-Warshall Algorithm
-
-- `data.cpp`: read in and process source data into adjacency matrix and adjacency list
-
-- `importance.cpp`: PageRank algorithm
-
-- `matrix_operation.cpp`: matrix operation support for eigenvector implementation of PageRank
-
-- `strongly_connected_components.cpp`: strongly connected component algorithm
-
-## Running Instruction
-
-### Main Drivers
+    B-->|result_interpreter run DFS directly|H;
+```
 
 The main entry is divided into two part: algorithm_driver and result_interpreter. 
 The reason of that is algorithm_driver will run all algorithms and takes ~82min on EWS 
 since it runs all algorithm and major time spent on Floyd-Warshall (~70min). 
-We divide the responsibilities into two part: computational and user interaction. 
+We divide the responsibilities into two part: computational (algorithm_driver) and user interaction (result_interpreter). 
+
+Data and algorithms are independent of each other, and the connection between them is controlled by the entry part. 
+
+The result_interpreter is nearly independent to algorithms unless the following exception:
+result_interpreter run DFS directly (b/c it is fast, and it enables running DFS from any origin per user's request). 
+
+Remark: Code style conforms to [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). 
+
+## Running Instruction
+
+### Main Drivers
 
 #### algorithm_driver 
 
