@@ -77,8 +77,6 @@ Data and algorithms are independent of each other, and the connection between th
 The result_interpreter is nearly independent to algorithms unless the following exception:
 result_interpreter run DFS directly (b/c it is fast, and it enables running DFS from any origin per user's request). 
 
-Remark: Code style conforms to [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). 
-
 ## Running Instruction
 
 ### Main Drivers
